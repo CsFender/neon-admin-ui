@@ -1,6 +1,6 @@
 <?php
 
-namespace Neon;
+namespace Neon\Admin;
 
 use \Illuminate\Support\Str;
 use \Illuminate\Support\ServiceProvider;
