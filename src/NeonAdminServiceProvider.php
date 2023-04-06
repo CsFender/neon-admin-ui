@@ -63,7 +63,7 @@ class NeonAdminServiceProvider extends ServiceProvider
 
   public function register()
   {
-    $this->mergeConfigFrom(__DIR__.'/../config/auth_guard.php', 'auth.guard');
+    $this->mergeConfigFrom(__DIR__.'/../config/auth_guards.php', 'auth.guards');
     $this->mergeConfigFrom(__DIR__.'/../config/auth_passwords.php', 'auth.passwords');
     $this->mergeConfigFrom(__DIR__.'/../config/auth_providers.php', 'auth.providers');
   }
