@@ -23,7 +23,7 @@ class Admin extends Resource
      *
      * @var string
      */
-    public static $group = 'Adminisztráció';
+    // public static $group = 'Adminisztráció';
 
     /**
      * The single value that should be used to represent the resource when being displayed.
@@ -43,12 +43,12 @@ class Admin extends Resource
 
     public static function label()
     {
-        return 'Adminisztrátorok';
+        return \Str::trans('Administrators');
     }
 
     public static function singularLabel()
     {
-        return 'Adminisztrátor';
+        return \Str::trans('Administrator');
     }
 
     /**
@@ -58,12 +58,12 @@ class Admin extends Resource
      */
     public static function icon()
     {
-        return view('nova::icon.svg-lock-open-outline', [
-            'height'    => 20,
-            'width'     => 20,
-            'color'     => 'var(--sidebar-icon)',
-            'class'     => 'sidebar-icon'
-        ])->render();
+        // return view('nova::icon.svg-lock-open-outline', [
+        //     'height'    => 20,
+        //     'width'     => 20,
+        //     'color'     => 'var(--sidebar-icon)',
+        //     'class'     => 'sidebar-icon'
+        // ])->render();
     }
 
     /**
@@ -75,17 +75,17 @@ class Admin extends Resource
     public function fields(Request $request)
     {
         return [
-            Text::make('Name')
+            Text::make(__('Name'))
                 ->sortable()
                 ->rules('required', 'max:255'),
 
-            Text::make('Email')
+            Text::make(__('Email'))
                 ->sortable()
                 ->rules('required', 'email', 'max:254')
                 ->creationRules('unique:admins,email')
                 ->updateRules('unique:admins,email,{{resourceId}}'),
 
-            Password::make('Password')
+            Password::make(__('Password'))
                 ->onlyOnForms()
                 ->creationRules('required', 'string', 'min:6')
                 ->updateRules('nullable', 'string', 'min:6'),
