@@ -1,0 +1,41 @@
+{
+  "name": "neon/admin-ui",
+  "description": "",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Balázs Ercsey",
+      "email": "balazs.ercsey@elementary-interactive.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Neon\\Admin\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Neon\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Neon\\Admin\\NeonAdminServiceProvider"
+      ]
+    }
+  },
+  "require": {
+    "php": "^8.1",
+    "laravel/framework": "^10.0",
+    "laravel/nova": "~4.0"
+  },
+  "repositories": [
+    {
+        "type": "composer",
+        "url": "https://nova.laravel.com"
+    }
+  ],
+  "branch-alias": {}
+}
