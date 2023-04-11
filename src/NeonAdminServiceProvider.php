@@ -43,6 +43,15 @@ class NeonAdminServiceProvider extends ServiceProvider
         __DIR__.'/Nova/Admin.php'     => app_path('Nova/Admin.php'),
 
       ], 'neon-nova');
+
+      $this->publishes([
+        __DIR__.'/Policies/AdminPolicy.php'     => app_path('Policies/AdminPolicy.php'),
+        __DIR__.'/Policies/SitePolicy.php'      => app_path('Policies/SitePolicy.php'),
+      ], 'neon-admin-plocies');
+
+      $this->publishes([
+        __DIR__.'/Providders/NovaServiceProvider.php' => app_path('Providers/NovaServiceProvider.php')
+      ]);
       // $this->publishes([
       //   __DIR__.'/../config/config_database.php'   => config_path('site.php'),
       // ], 'neon-site-database');
