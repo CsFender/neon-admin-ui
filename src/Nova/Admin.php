@@ -43,12 +43,12 @@ class Admin extends Resource
 
     public static function label()
     {
-        return \Str::trans('Administrators');
+        return __('Administrators');
     }
 
     public static function singularLabel()
     {
-        return \Str::trans('Administrator');
+        return __('Administrator');
     }
 
     /**
