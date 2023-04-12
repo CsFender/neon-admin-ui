@@ -2,15 +2,13 @@
 
 namespace App\Providers;
 
-use App\Nova\Admin;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Nova\Nova;
 use Laravel\Nova\NovaApplicationServiceProvider;
 
-use App\Nova\License;
-use App\Nova\Release;
-use App\Nova\Series;
-use App\Nova\User;
+use App\Nova\Admin;
+use App\Nova\Site;
+
 use Illuminate\Http\Request;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Dashboards\Main;
