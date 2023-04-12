@@ -36,18 +36,18 @@ class NeonAdminServiceProvider extends ServiceProvider
       // Storage::put(__DIR__.'/../config/config.php', Str::of(Storage::get(__DIR__.'/../config/config.php'))->replace('##uuid##', Str::uuid()));
 
       $this->publishes([
-        __DIR__.'/../config/nova.php'   => config_path('nova.php'),
+        __DIR__.'/../config/nova.php'                => config_path('nova.php'),
       ], 'neon-admin');
 
       $this->publishes([
-        __DIR__.'/Nova/Admin.php'     => app_path('Nova/Admin.php'),
-
+        __DIR__.'/Nova/Admin.php'                    => app_path('Nova/Admin.php'),
+        __DIR__.'/Nova/Site.php'                     => app_path('Nova/Site.php'),
       ], 'neon-nova');
 
       $this->publishes([
-        __DIR__.'/Policies/AdminPolicy.php'     => app_path('Policies/AdminPolicy.php'),
-        __DIR__.'/Policies/SitePolicy.php'      => app_path('Policies/SitePolicy.php'),
-      ], 'neon-admin-plocies');
+        __DIR__.'/Policies/AdminPolicy.php.stub'     => app_path('Policies/AdminPolicy.php'),
+        __DIR__.'/Policies/SitePolicy.php.stub'      => app_path('Policies/SitePolicy.php'),
+      ], 'neon-admin-policies');
 
       $this->publishes([
         __DIR__.'/Providers/NovaServiceProvider.php' => app_path('Providers/NovaServiceProvider.php')
