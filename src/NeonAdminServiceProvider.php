@@ -27,7 +27,10 @@ class NeonAdminServiceProvider extends ServiceProvider
        */
       $this->publishes([
         __DIR__ . '/../database/migrations/create_admins_table.php.stub'        => database_path('migrations/' . date('Y_m_d_', time()) . '000001_create_admins_table.php'),
-        // __DIR__ . '/../database/migrations/create_attribute_values_table.php.stub'  => database_path('migrations/' . date('Y_m_d_', time()) . '000002_create_attribute_values_table.php'),
+        __DIR__ . '/../database/migrations/change_user_id_to_string_on_action_events_table.php.stub'        => database_path('migrations/' . date('Y_m_d_', time()) . '000002_change_user_id_to_string_on_action_events_table.php'),
+        __DIR__ . '/../database/migrations/change_actionable_id_to_string_on_action_events_table.php.stub'        => database_path('migrations/' . date('Y_m_d_', time()) . '000003_change_actionable_id_to_string_on_action_events_table.php'),
+        __DIR__ . '/../database/migrations/change_target_id_to_string_on_action_events_table.php.stub'        => database_path('migrations/' . date('Y_m_d_', time()) . '000004_change_target_id_to_string_on_action_events_table.php'),
+        __DIR__ . '/../database/migrations/change_model_id_to_string_on_action_events_table.php.stub'        => database_path('migrations/' . date('Y_m_d_', time()) . '000004_change_model_id_to_string_on_action_events_table.php'),
       ], 'neon-migrations');
   
     // $kernel->pushMiddleware(SiteMiddleware::class);
