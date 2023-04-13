@@ -7,7 +7,7 @@ use Neon\Site\Models\Site;
   
 class SitePolicy
 {
-  public function viewAny(Admin $user, Site $site): bool
+  public function viewAny(Admin $user): bool
   {
     return true;
   }
@@ -17,7 +17,7 @@ class SitePolicy
     return true;
   }
 
-  public function create(Admin $user, Site $site): bool
+  public function create(Admin $user): bool
   {
     return true;
   }
