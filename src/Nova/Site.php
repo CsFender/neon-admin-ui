@@ -46,18 +46,16 @@ class Site extends Resource
     public function fields(NovaRequest $request)
     {
         return [
-            Text::make('Label')
+            Text::make(__('Label'), 'label')
                 ->sortable()
                 ->rules('required', 'max:255'),
 
-            Text::make('Locale')
-                ->sortable()
-                ->rules('required', 'max:2'),
+            self::SelectLocale(),
             
-            KeyValue::make(__("Domains"))
-                ->rules('required', 'json'),
+            KeyValue::make(__("Domains"), 'domains')
+                ->rules('required'),
 
-            Boolean::make(__("Default site"))
+            Boolean::make(__("Default site"), 'default')
         ];
     }
 
