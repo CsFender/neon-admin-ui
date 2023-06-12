@@ -4,12 +4,13 @@ namespace App\Nova;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
+
 use Laravel\Nova\Fields\Boolean;
-use Laravel\Nova\Fields\Gravatar;
-use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Image;
 use Laravel\Nova\Fields\KeyValue;
-use Laravel\Nova\Fields\Password;
+use Laravel\Nova\Fields\Slug;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class Site extends Resource
@@ -46,18 +47,30 @@ class Site extends Resource
     public function fields(NovaRequest $request)
     {
         return [
-            Text::make('Label')
+            Text::make(__('title'), 'title')
                 ->sortable()
                 ->rules('required', 'max:255'),
-
-            Text::make('Locale')
-                ->sortable()
-                ->rules('required', 'max:2'),
+            Slug::make('', 'slug')
+                ->from('title')
+                ->separator('_'),
+            Image::make(__('Favicon'), 'favicon')
+                ->store(function (Request $request, $model) {
+                    /**
+                     * @todo Handle favicon via media library
+                     */
+                    // $model->addMediaFromRequest('logo')->toMediaCollection('manufacturers');
             
-            KeyValue::make(__("Domains"))
-                ->rules('required', 'json'),
+                    return true;
+                }),
+            KeyValue::make(__("Domains"), 'domains')
+                ->rules('required'),
+            Select::make(__('Locale'), 'locale')
+                ->options(config('site.available_locales')),
+            Textarea::make(__('Robots'), 'robots')
+                ->rows(5),
+            Boolean::make(__("Default site"), 'default')
+                ->help(__('The domain which marked as default will be loaded if no domains were matched by domain or prefix.')),
 
-            Boolean::make(__("Default site"))
         ];
     }
 

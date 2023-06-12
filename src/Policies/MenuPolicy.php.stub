@@ -3,16 +3,16 @@
 namespace App\Policies;
 
 use Neon\Admin\Models\Admin;
-use Neon\Site\Models\Site;
+use Neon\Models\Menu;
   
-class SitePolicy
+class MenuPolicy
 {
   public function viewAny(Admin $user): bool
   {
     return true;
   }
 
-  public function view(Admin $user, Site $site): bool
+  public function view(Admin $user, Menu $menu): bool
   {
     return true;
   }
@@ -22,22 +22,22 @@ class SitePolicy
     return true;
   }
 
-  public function update(Admin $user, Site $site): bool
+  public function update(Admin $user, Menu $menu): bool
   {
     return true;
   }
 
-  public function delete(Admin $user, Site $site): bool
+  public function delete(Admin $user, Menu $menu): bool
   {
     return true;
   }
 
-  public function restore(Admin $user, Site $site): bool
+  public function restore(Admin $user, Menu $menu): bool
   {
     return true;
   }
 
-  public function forceDelete(Admin $user, Site $site): bool
+  public function forceDelete(Admin $user, Menu $menu): bool
   {
     return true;
   }

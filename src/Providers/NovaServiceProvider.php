@@ -27,7 +27,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
   {
     parent::boot();
 
-    Nova::mainMenu(function (Request $request) {
+    Nova::mainMenu(function (Request $request) use ($resources) {
       return [
         MenuSection::dashboard(Main::class)->icon('chart-bar'),
 
@@ -43,7 +43,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         MenuSection::make(__('Website'), [
           MenuItem::resource(Site::class)
             ->canSee(function (NovaRequest $request) {
-              return config('site.driver', 'file') == 'database' && $request->user()->can('viewAny', \Neon\Admin\Models\Site::class);
+              return config('site.driver', 'file') == 'database' && $request->user()->can('viewAny', \Neon\Site\Models\Site::class);
             }),
         ])
           ->icon('globe')
@@ -58,6 +58,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
          * ...
          * 
          */
+          // Nova::resourcesIn(app_path('Nova'))
         ])->collapsable()
       ];
     });
