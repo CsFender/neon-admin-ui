@@ -46,6 +46,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
               return config('site.driver', 'file') == 'database' && $request->user()->can('viewAny', \Neon\Site\Models\Site::class);
             }),
         ])
+          -
           ->icon('globe')
           ->collapsable(),
 
@@ -62,6 +63,11 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         ])->collapsable()
       ];
     });
+
+    Nova::footer(function ($request) {
+      return Blade::render('
+              This is NEON!!!!
+      ');
   }
 
   /**
