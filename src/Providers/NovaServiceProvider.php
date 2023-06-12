@@ -27,7 +27,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
   {
     parent::boot();
 
-    Nova::mainMenu(function (Request $request) {
+    Nova::mainMenu(function (Request $request) use ($resources) {
       return [
         MenuSection::dashboard(Main::class)->icon('chart-bar'),
 
@@ -58,6 +58,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
          * ...
          * 
          */
+          // Nova::resourcesIn(app_path('Nova'))
         ])->collapsable()
       ];
     });

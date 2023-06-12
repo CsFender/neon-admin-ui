@@ -2,32 +2,6 @@
 
 namespace App\Nova;
 
-use Illuminate\Http\Request;
-use Laravel\Nova\Http\Requests\NovaRequest;
-
-use Laravel\Nova\Fields\{
-    BelongsTo,
-    Boolean,
-    DateTime,
-    HasMany,
-    Heading,
-    Image,
-    KeyValue,
-    MorphOne,
-    Select,
-    Slug,
-    Text,
-    Textarea
-};
-// use Benjaminhirsch\NovaSlugField\{
-//     TextWithSlug,
-//     Slug
-// };
-// use MichielKempen\NovaOrderField\{
-//     Orderable,
-//     OrderField
-// };
-
 class Link extends Resource
 {
     // use Orderable;

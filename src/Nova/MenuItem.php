@@ -2,28 +2,16 @@
 
 namespace App\Nova;
 
-use Illuminate\Http\Request;
-use Laravel\Nova\Http\Requests\NovaRequest;
-
-use Laravel\Nova\Fields\{
-    Badge,
-    BelongsTo,
-    BelongsToMany,
-    Boolean,
-    Select,
-    HasMany,
-    Slug,
-    Text
-};
-
-class Menu extends Resource
+class MenuItem extends Resource
 {
+    use Outl1ne\NovaSortable\Traits\HasSortableRows;
+
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = \Neon\Models\Menu::class;
+    public static $model = \Neon\Models\MenuItem::class;
 
     /**
      * The visual style used for the table. Available options are 'tight' and 'default'.
@@ -40,6 +28,13 @@ class Menu extends Resource
     public static $title = 'title';
 
     /**
+     * Disable sorting cache.
+     * 
+     * @var boolean
+     */
+    public static $sortableCacheEnabled = false;
+
+    /**
      * The columns that should be searched.
      *
      * @var array
@@ -50,12 +45,12 @@ class Menu extends Resource
 
     public static function label()
     {
-        return __('Menus');
+        return __('Menu Items');
     }
 
     public static function singularLabel()
     {
-        return __('Menu');
+        return __('Menu Item');
     }
 
     /**
@@ -69,46 +64,41 @@ class Menu extends Resource
         $model = $this;
 
         $fields = [
-            BelongsToMany::make(__('Oldal'), 'site', \App\Nova\Site::class)
-                ->fields(function ($request, $relatedModel) {
-                    return [
-                        Text::make(__('Kapcsolat típusa'), 'dependence_type')
-                            ->default(\Neon\Models\Menu::class),
-                    ];
-                }),
-            Text::make('Menü', 'title')
+            BelongsTo::make(__('Menu'), 'menu', \App\Nova\Menu::class),
+            BelongsTo::make(__('Oldal'), 'link', \App\Nova\Link::class),
+            Text::make(__('Title'), 'title')
                 ->rules('required', 'max:255'),
-            Slug::make('', 'slug')
-                ->from('title')
-                // ->slugifyOptions([
-                //     'lang'  => 'hu'
-                // ])
-                ->hideFromIndex()
-                ->hideFromDetail(),
-                Text::make('Használata', function () use ($model) {
-                    return "<x-neon-menu id=\"{$model->slug}\">\n\r
-                                <x-slot:tools>\n\r
-                                    ...\n\r
-                                </x-slot>\n\r
-                            </x-neon-menu>";
-            })
-                // ->asHtml()
-                ->showOnDetail(),
-            Boolean::make(__('Active'), 'status')
-                ->trueValue(\Neon\Models\Statuses\BasicStatus::Active->value)
-                ->falseValue(\Neon\Models\Statuses\BasicStatus::Inactive->value)
-                ->hideFromIndex(),
-            Badge::make(__('Status'))->map([
-                    \Neon\Models\Statuses\BasicStatus::Inactive->value  => 'danger',
-                    \Neon\Models\Statuses\BasicStatus::Active->value    => 'success',
-                ])
-                ->onlyOnIndex(),
-            // Text::make('Látható linkek', function () use ($model) {
-            //     return $model->links()->count();
-            // })
-            //     ->asHtml()
+            // Slug::make('', 'slug')
+            //     ->from('title')
+            //     // ->slugifyOptions([
+            //     //     'lang'  => 'hu'
+            //     // ])
+            //     ->hideFromIndex()
             //     ->hideFromDetail(),
-            HasMany::make(__('Items'), 'items', \App\Nova\MenuItem::class)
+            //     Text::make('Használata', function () use ($model) {
+            //         return "<x-neon-menu id=\"{$model->slug}\">\n\r
+            //                     <x-slot:tools>\n\r
+            //                         ...\n\r
+            //                     </x-slot>\n\r
+            //                 </x-neon-menu>";
+            // })
+            //     // ->asHtml()
+            //     ->showOnDetail(),
+            // Boolean::make(__('Active'), 'status')
+            //     ->trueValue(\Neon\Models\Statuses\BasicStatus::Active->value)
+            //     ->falseValue(\Neon\Models\Statuses\BasicStatus::Inactive->value)
+            //     ->hideFromIndex(),
+            // Badge::make(__('Status'))->map([
+            //         \Neon\Models\Statuses\BasicStatus::Inactive->value  => 'danger',
+            //         \Neon\Models\Statuses\BasicStatus::Active->value    => 'success',
+            //     ])
+            //     ->onlyOnIndex(),
+            // // Text::make('Látható linkek', function () use ($model) {
+            // //     return $model->links()->count();
+            // // })
+            // //     ->asHtml()
+            // //     ->hideFromDetail(),
+            // HasMany::make(__('Items'), 'items', \App\Nova\MenuItem::class)
         ];
 
         // /** Collect languages.
