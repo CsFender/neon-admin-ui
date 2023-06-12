@@ -2,6 +2,12 @@
 
 namespace App\Nova;
 
+use Neon\Models\Scopes\ActiveScope;
+use Neon\Models\Scopes\PublishedScope;
+use Neon\Site\Models\Scopes\SiteScope;
+
+use Whitecube\NovaFlexibleContent\Flexible;
+
 class Link extends Resource
 {
     // use Orderable;
@@ -67,8 +73,19 @@ class Link extends Resource
     {
         $model = $this;
 
+        $layouts = config('neon.content.layouts', []);
+        $flexible = Flexible::make(__('Content'), 'content');
+
         $fields = [
-            BelongsTo::make('Menü', 'menu', \App\Nova\Menu::class),
+            BelongsToMany::make(__('Site'), 'site', \App\Nova\Site::class),
+                // ->fields(function ($request, $relatedModel) {
+                //     return [
+                //         Text::make(__('Kapcsolat típusa'), 'dependence_type')
+                //             ->default(\Neon\Models\Link::class),
+                //     ];
+                // }),
+            BelongsTo::make('Menü', 'menu', \App\Nova\Menu::class)
+                ->nullable(),
             Text::make('Link', 'title')
                 // ->slug('slug')
                 ->rules('required', 'max:255'),
@@ -81,7 +98,7 @@ class Link extends Resource
                 ->hideFromDetail(),
             Text::make('', function() use ($model) {
                 return "<a style=\"color: inherit;\" href=\"".url($model->href)."\" target=\"_blank\" title=\"{$model->href}\">".view('nova::icon.svg-link', [
-                    'color'     => 'var(--colors-gray-400)'
+                    'color'     => 'rgb(var(--colors-gray-400), 0.5)'
                 ])->render()."</a>";
             })
                 ->asHtml()
@@ -101,6 +118,14 @@ class Link extends Resource
             Textarea::make('Leírás', 'og_description')
                 ->hideFromIndex(),
             Image::make('Kép', 'og_image')
+                ->store(function(Request $request) {
+                    $request->file('og_image')->storeAs('links', $request->file('og_image')->getFilename().'_'.$request->file('og_image')->getClientOriginalName(), config('nova.storage_disk'));
+                    // dd($file);
+
+                    return [
+                        'og_image' => 'links/'.$request->file('og_image')->getFilename().'_'.$request->file('og_image')->getClientOriginalName(),
+                    ];
+                })
                 ->hideFromIndex(),
             Heading::make('Elérhetőség'),
             Boolean::make('Elérhető', 'status')
@@ -140,6 +165,26 @@ class Link extends Resource
             HasMany::make('Elemek', 'children', \App\Nova\Link::class),
             // MorphOne::make('Tartalom', 'content', \App\Nova\Content::class)
         ];
+
+        // $advanced_fields = \Neon\Attributable\Models\Attribute::where('class', get_class($model->resource))->get();
+        // if ($advanced_fields->count())
+        // {
+        //     $fields[] = Heading::make(__('Advanced settings'));
+        //     foreach ($advanced_fields as $field)
+        //     {
+        //         $field_class = '\\Laravel\\Nova\\Fields\\'.$field->field;
+        //         $fields[] = $field_class::make($field->name, $field->slug)
+        //             ->rules($field->rules)
+        //             ->hideFromIndex();
+        //     }
+        // }
+
+        foreach ($layouts as $layout)
+        {
+            $flexible->addLayout($layout);
+        }
+
+        $fields[] = $flexible;
 
         return $fields;
     }
