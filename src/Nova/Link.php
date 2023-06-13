@@ -202,7 +202,7 @@ class Link extends Resource
             Tab::make(__('Advanced Settings'), $advanced_fields),
         ]);
 
-        return $tabs;
+        return [$tabs];
     }
 
     /**
