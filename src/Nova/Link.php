@@ -2,10 +2,6 @@
 
 namespace App\Nova;
 
-use Neon\Models\Scopes\ActiveScope;
-use Neon\Models\Scopes\PublishedScope;
-use Neon\Site\Models\Scopes\SiteScope;
-
 use Illuminate\Http\Request;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
@@ -65,12 +61,6 @@ class Link extends Resource
     public static $search = [
         'title',
     ];
-    
-    /** Set the order field.
-     * 
-     * @var string
-     */
-    public static $defaultOrderField = 'order';
     
     /** Show as many items as it could be.
      * 
@@ -207,9 +197,9 @@ class Link extends Resource
         $fields[] = $flexible;
 
 
-        $tabs = Tabs::make('Some Title', [
-            Tab::make('Balance', $fields),
-            Tab::make('Other Info', $advanced_fields),
+        $tabs = Tabs::make(__('Link'), [
+            Tab::make(__('Page'), $fields),
+            Tab::make(__('Advanced Settings'), $advanced_fields),
         ]);
 
         return $tabs;
@@ -271,19 +261,15 @@ class Link extends Resource
         $next = parent::indexQuery($request, $query);
 
         $next->withoutGlobalScopes([
-            'Brightly\Mango\Scopes\ActiveScope',
-            'Brightly\Mango\Scopes\PublishedScope',
-            'Brightly\Mango\Scopes\SiteScope',
+            Neon\Models\Scopes\ActiveScope::class,
+            Neon\Models\Scopes\PublishedScope::class,
+            Neon\Site\Models\Scopes\SiteScope::class,
         ]);
 
         /** Empty orders and the order value... */
         $next->getQuery()->orders = [];
         $next->orderBy(
-            'status',
-            'asc'
-        );
-        $next->orderBy(
-            self::$defaultOrderField,
+            'tite',
             'asc'
         );
 
