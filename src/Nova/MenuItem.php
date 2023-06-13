@@ -11,188 +11,191 @@ use Outl1ne\NovaSortable\Traits\HasSortableRows;
 /** Nova fields.
  * 
  */
+
 use Laravel\Nova\Fields\{
-    BelongsTo,
-    Text,
+  BelongsTo,
+  Select,
+  Text,
 };
+
 class MenuItem extends Resource
 {
-    use HasSortableRows;
+  use HasSortableRows;
 
-    /**
-     * The model the resource corresponds to.
-     *
-     * @var string
-     */
-    public static $model = \Neon\Models\MenuItem::class;
+  /**
+   * The model the resource corresponds to.
+   *
+   * @var string
+   */
+  public static $model = \Neon\Models\MenuItem::class;
 
-    /**
-     * The visual style used for the table. Available options are 'tight' and 'default'.
-     *
-     * @var string
-     */
-    public static $tableStyle = 'tight';
+  /**
+   * The visual style used for the table. Available options are 'tight' and 'default'.
+   *
+   * @var string
+   */
+  public static $tableStyle = 'tight';
 
-    /**
-     * The single value that should be used to represent the resource when being displayed.
-     *
-     * @var string
-     */
-    public static $title = 'title';
+  /**
+   * The single value that should be used to represent the resource when being displayed.
+   *
+   * @var string
+   */
+  public static $title = 'title';
 
-    /**
-     * Disable sorting cache.
-     * 
-     * @var boolean
-     */
-    public static $sortableCacheEnabled = false;
+  /**
+   * Disable sorting cache.
+   * 
+   * @var boolean
+   */
+  public static $sortableCacheEnabled = false;
 
-    /**
-     * The columns that should be searched.
-     *
-     * @var array
-     */
-    public static $search = [
-        'title',
+  /**
+   * The columns that should be searched.
+   *
+   * @var array
+   */
+  public static $search = [
+    'title',
+  ];
+
+  public static function label()
+  {
+    return __('Menu Items');
+  }
+
+  public static function singularLabel()
+  {
+    return __('Menu Item');
+  }
+
+  /**
+   * Return the location to redirect the user after creation.
+   *
+   * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+   * @param  \Laravel\Nova\Resource  $resource
+   * @return \Laravel\Nova\URL|string
+   */
+  public static function redirectAfterCreate(NovaRequest $request, $resource)
+  {
+    return '/resources/menus/' . $resource->menu_id;
+  }
+
+  /**
+   * Get the fields displayed by the resource.
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @return array
+   */
+  public function fields(Request $request)
+  {
+    $model = $this;
+
+    $fields = [
+      BelongsTo::make(__('Menu'), 'menu', \App\Nova\Menu::class),
+      BelongsTo::make(__('Link'), 'link', \App\Nova\Link::class),
+      Text::make(__('Title'), 'title')
+        ->rules('required', 'max:255'),
+      Text::make(__('URL'), 'url')
+        ->rules('max:255')
+        ->help(__('Advanced URL for the menu item. If not set, the link\'s URL will be inherited.')),
+      Select::make(__('Link open target'), 'target')
+        ->options([
+          '_blank'    => __('New window'),
+          '_self'     => __('Same window'),
+        ])
+        ->hideFromIndex()
+        ->hideFromDetail(),
     ];
 
-    public static function label()
-    {
-        return __('Menu Items');
-    }
+    return $fields;
+  }
 
-    public static function singularLabel()
-    {
-        return __('Menu Item');
-    }
+  /**
+   * Get the cards available for the request.
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @return array
+   */
+  public function cards(Request $request)
+  {
+    return [];
+  }
 
-    /**
-     * Get the fields displayed by the resource.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
-     */
-    public function fields(Request $request)
-    {
-        $model = $this;
+  /**
+   * Get the filters available for the resource.
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @return array
+   */
+  public function filters(Request $request)
+  {
+    return [];
+  }
 
-        $fields = [
-            BelongsTo::make(__('Menu'), 'menu', \App\Nova\Menu::class),
-            BelongsTo::make(__('Oldal'), 'link', \App\Nova\Link::class),
-            Text::make(__('Title'), 'title')
-                ->rules('required', 'max:255'),
-            // Slug::make('', 'slug')
-            //     ->from('title')
-            //     // ->slugifyOptions([
-            //     //     'lang'  => 'hu'
-            //     // ])
-            //     ->hideFromIndex()
-            //     ->hideFromDetail(),
-            //     Text::make('Használata', function () use ($model) {
-            //         return "<x-neon-menu id=\"{$model->slug}\">\n\r
-            //                     <x-slot:tools>\n\r
-            //                         ...\n\r
-            //                     </x-slot>\n\r
-            //                 </x-neon-menu>";
-            // })
-            //     // ->asHtml()
-            //     ->showOnDetail(),
-            // Boolean::make(__('Active'), 'status')
-            //     ->trueValue(\Neon\Models\Statuses\BasicStatus::Active->value)
-            //     ->falseValue(\Neon\Models\Statuses\BasicStatus::Inactive->value)
-            //     ->hideFromIndex(),
-            // Badge::make(__('Status'))->map([
-            //         \Neon\Models\Statuses\BasicStatus::Inactive->value  => 'danger',
-            //         \Neon\Models\Statuses\BasicStatus::Active->value    => 'success',
-            //     ])
-            //     ->onlyOnIndex(),
-            // // Text::make('Látható linkek', function () use ($model) {
-            // //     return $model->links()->count();
-            // // })
-            // //     ->asHtml()
-            // //     ->hideFromDetail(),
-            // HasMany::make(__('Items'), 'items', \App\Nova\MenuItem::class)
-        ];
+  /**
+   * Get the lenses available for the resource.
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @return array
+   */
+  public function lenses(Request $request)
+  {
+    return [];
+  }
 
-        // /** Collect languages.
-        //  * @var Illuminate\Database\Eloquent\Collection
-        //  */
-        // $languages = collect(config('laravellocalization.supportedLocales'));
+  /**
+   * Get the actions available for the resource.
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @return array
+   */
+  public function actions(Request $request)
+  {
+    return [];
+  }
 
-        // if ($languages->count() > 1)
-        // {
-        //     $fields[] = Select::make('Lokalizáció', 'locale')
-        //         ->options($languages->mapWithKeys(function($item, $key) {
-        //             return [$key => \Str::ucfirst($item['native'])];
-        //         }))
-        //         ->help('A menürendszer csak ezen a nyelvű oldalon fog megjelenni. Különböző nyelvekhez azonos nevű menü is létrehozható, hogy ne kelljen nyelvenként külön kulcsot használni.')
-        //         ->rules('required');
-        // }
+  /**
+   * Build an "index" query for the given resource.
+   *
+   * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+   * @param  \Illuminate\Database\Eloquent\Builder  $query
+   * @return \Illuminate\Database\Eloquent\Builder
+   */
+  public static function indexQuery(NovaRequest $request, $query)
+  {
+    $next = parent::indexQuery($request, $query);
 
-        return $fields;
-    }
+    $next->withoutGlobalScopes([
+      \Neon\Models\Scopes\ActiveScope::class
+    ]);
 
-    /**
-     * Get the cards available for the request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
-     */
-    public function cards(Request $request)
-    {
-        return [];
-    }
+    $next->getQuery()->orders = [];
+    $next->orderBy(
+      'order',
+      'asc'
+    );
 
-    /**
-     * Get the filters available for the resource.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
-     */
-    public function filters(Request $request)
-    {
-        return [];
-    }
+    return $next;
+  }
 
-    /**
-     * Get the lenses available for the resource.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
-     */
-    public function lenses(Request $request)
-    {
-        return [];
-    }
+  /**
+   * Build a "relatable" query for the given resource.
+   *
+   * This query determines which instances of the model may be attached to other resources.
+   *
+   * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+   * @param  \Illuminate\Database\Eloquent\Builder  $query
+   * @return \Illuminate\Database\Eloquent\Builder
+   */
+  public static function relatableQuery(NovaRequest $request, $query)
+  {
+    $next = parent::relatableQuery($request, $query);
 
-    /**
-     * Get the actions available for the resource.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
-     */
-    public function actions(Request $request)
-    {
-        return [];
-    }
+    $next->withoutGlobalScopes([
+      \Neon\Models\Scopes\ActiveScope::class
+    ]);
 
-    /**
-     * Build an "index" query for the given resource.
-     *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public static function indexQuery(NovaRequest $request, $query)
-    {
-        $next = parent::indexQuery($request, $query);
-
-        $next->withoutGlobalScopes([
-            \Neon\Models\Scopes\ActiveScope::class,
-            \Neon\Site\Models\Scopes\SiteScope::class
-        ]);
-
-        // dd($next);
-        return $next;
-    }
+    return $next;
+  }
 }

@@ -8,6 +8,7 @@ use Illuminate\Validation\Rules;
 use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\Image;
 use Laravel\Nova\Fields\KeyValue;
+use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Slug;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
@@ -27,7 +28,7 @@ class Site extends Resource
      *
      * @var string
      */
-    public static $title = 'label';
+    public static $title = 'title';
 
     /**
      * The columns that should be searched.
@@ -35,7 +36,7 @@ class Site extends Resource
      * @var array
      */
     public static $search = [
-        'locale', 'label', 'domain',
+        'locale', 'title', 'domain',
     ];
 
     /**
@@ -52,7 +53,8 @@ class Site extends Resource
                 ->rules('required', 'max:255'),
             Slug::make('', 'slug')
                 ->from('title')
-                ->separator('_'),
+                ->separator('_')
+                ->hideFromIndex(),
             Image::make(__('Favicon'), 'favicon')
                 ->store(function (Request $request, $model) {
                     /**
