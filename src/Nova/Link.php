@@ -269,7 +269,7 @@ class Link extends Resource
         /** Empty orders and the order value... */
         $next->getQuery()->orders = [];
         $next->orderBy(
-            'tite',
+            'title',
             'asc'
         );
 
