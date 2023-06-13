@@ -73,6 +73,8 @@ class NeonAdminServiceProvider extends ServiceProvider
         __DIR__.'/Policies/MenuPolicy.php.stub'      => app_path('Policies/MenuPolicy.php'),
         __DIR__.'/Policies/LinkPolicy.php.stub'      => app_path('Policies/LinkPolicy.php'),
         __DIR__.'/Policies/SitePolicy.php.stub'      => app_path('Policies/SitePolicy.php'),
+
+        __DIR__ . '/../resources/views/vendor'       => resource_path('views/vendor'),
       ], 'neon-admin');
 
       $this->publishes([
