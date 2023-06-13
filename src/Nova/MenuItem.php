@@ -2,52 +2,22 @@
 
 namespace App\Nova;
 
+
+use Illuminate\Http\Request;
+use Laravel\Nova\Http\Requests\NovaRequest;
+
+use Outl1ne\NovaSortable\Traits\HasSortableRows;
+
 /** Nova fields.
  * 
  */
 use Laravel\Nova\Fields\{
-    Audio,
-    Avatar,
-    Badge,
-    Boolean,
-    BooleanGroup,
-    Code,
-    Color,
-    Country,
-    Currency,
-    Date,
-    DateTime,
-    Email,
-    File,
-    Gravatar,
-    Heading,
-    Hidden,
-    ID,
-    Image,
-    KeyValue,
-    Markdown,
-    MultiSelect,
-    Number,
-    Password,
-    PasswordConfirmation,
-    Select,
-    Slug,
-    Sparkline,
-    Status,
-    Stack,
-    Tag,
+    BelongsTo,
     Text,
-    Textarea,
-    Timezone,
-    Trix,
-    UiAvatar,
-    URL,
-    VaporFile,
-    VaporImage,
 };
 class MenuItem extends Resource
 {
-    use Outl1ne\NovaSortable\Traits\HasSortableRows;
+    use HasSortableRows;
 
     /**
      * The model the resource corresponds to.
