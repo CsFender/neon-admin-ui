@@ -8,8 +8,28 @@ use Neon\Site\Models\Scopes\SiteScope;
 
 use Whitecube\NovaFlexibleContent\Flexible;
 
+use Eminiarts\Tabs\Traits\HasTabs;
+use Eminiarts\Tabs\Tabs;
+use Eminiarts\Tabs\Tab;
+/** Nova fields.
+ * 
+ */
+use Laravel\Nova\Fields\{
+    Boolean,
+    DateTime,
+    Heading,
+    Image,
+    KeyValue,
+    Select,
+    Slug,
+    Text,
+    Textarea,
+};
+
 class Link extends Resource
 {
+    use HasTabs;
+
     // use Orderable;
 
     /**
@@ -84,9 +104,9 @@ class Link extends Resource
                 //             ->default(\Neon\Models\Link::class),
                 //     ];
                 // }),
-            BelongsTo::make('Menü', 'menu', \App\Nova\Menu::class)
+            BelongsToMany::make(__('Menu'), 'menus', \App\Nova\MenuItem::class)
                 ->nullable(),
-            Text::make('Link', 'title')
+            Text::make(__('Title'), 'title')
                 // ->slug('slug')
                 ->rules('required', 'max:255'),
             Slug::make('URI', 'slug')
@@ -103,21 +123,13 @@ class Link extends Resource
             })
                 ->asHtml()
                 ->hideFromDetail(),
-            // OrderField::make('Sorrend', 'order'),
-            Select::make('Nyitás', 'target')
-                ->options([
-                    '_self'     => 'Saját ablakban',
-                    '_blank'    => 'Új ablakba'
-                ])
-                ->hideFromIndex()
-                ->hideFromDetail(),
-            Heading::make('Megosztás'),
-            Text::make('Megosztási cím', 'og_title')
-                ->help('Csak akkor kell megadni, ha nem egyezik az oldal címével.')
+            Heading::make(__('Sharing')),
+            Text::make(__('Sharing Title'), 'og_title')
+                ->help(__('Sharing title will shown on social netwok sharing box.'))
                 ->hideFromIndex(),
-            Textarea::make('Leírás', 'og_description')
+            Textarea::make(__('Description'), 'og_description')
                 ->hideFromIndex(),
-            Image::make('Kép', 'og_image')
+            Image::make(__('Image'), 'og_image')
                 ->store(function(Request $request) {
                     $request->file('og_image')->storeAs('links', $request->file('og_image')->getFilename().'_'.$request->file('og_image')->getClientOriginalName(), config('nova.storage_disk'));
                     // dd($file);
@@ -127,15 +139,20 @@ class Link extends Resource
                     ];
                 })
                 ->hideFromIndex(),
-            Heading::make('Elérhetőség'),
-            Boolean::make('Elérhető', 'status')
+            Heading::make(__('Availability')),
+            Boolean::make(__('Available'), 'status')
                 ->trueValue(\Neon\Models\Statuses\BasicStatus::Active->value)
                 ->falseValue(\Neon\Models\Statuses\BasicStatus::Inactive->value)
-                ->help('Kapcsoljuk be, ha azt akarjuk, hogy a link elérhető legyen.'),
-            DateTime::make('Elérhetőség kezdete', 'published_at')
-                ->help('Ha a link elérhetőre van állítva, akkor kötelező megadni. Itt állíthatjuk be hogy mikortól legyen elérhető.'),
-            DateTime::make('Elérhetőség vége', 'expired_at')
-                ->help('Nem kötelező kitölteni, de ezzel szabályozhatjuk, hogy meddig legyen elérhető a link.'),
+                ->help(__('Check this on if you want to link be available!')),
+            DateTime::make(__('Published at'), 'published_at')
+                ->help('If the link is active, will be shown at this time and date.'),
+            DateTime::make(__('Expire at'), 'expired_at')
+                ->help('Not mandatory. If it\'s empty, availability never expires, if not, the link will accessible until this time.'),
+            HasMany::make('Elemek', 'children', \App\Nova\Link::class),
+            // MorphOne::make('Tartalom', 'content', \App\Nova\Content::class)
+        ];
+
+        $advanced_fields = [
             Heading::make('Haladó beállítások')
                 ->hideFromDetail(),
             Text::make('URI', 'url')
@@ -162,8 +179,6 @@ class Link extends Resource
                 ->help('Külső hivatkozás, például: https://brightly.hu')
                 ->hideFromIndex()
                 ->hideFromDetail(),
-            HasMany::make('Elemek', 'children', \App\Nova\Link::class),
-            // MorphOne::make('Tartalom', 'content', \App\Nova\Content::class)
         ];
 
         // $advanced_fields = \Neon\Attributable\Models\Attribute::where('class', get_class($model->resource))->get();
@@ -186,7 +201,13 @@ class Link extends Resource
 
         $fields[] = $flexible;
 
-        return $fields;
+
+        $tabs = Tabs::make('Some Title', [
+            Tab::make('Balance', $fields),
+            Tab::make('Other Info', $advanced_fields),
+        ]);
+
+        return $tabs;
     }
 
     /**

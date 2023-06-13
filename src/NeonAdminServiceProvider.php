@@ -61,9 +61,12 @@ class NeonAdminServiceProvider extends ServiceProvider
       ], 'neon-configs');
 
       $this->publishes([
+        __DIR__.'/Nova/Resource.php'                 => app_path('Nova/Resource.php'), //- The root resource itself.
+
         __DIR__.'/Nova/Admin.php'                    => app_path('Nova/Admin.php'),
         __DIR__.'/Nova/Link.php'                     => app_path('Nova/Link.php'),
         __DIR__.'/Nova/Menu.php'                     => app_path('Nova/Menu.php'),
+        __DIR__.'/Nova/MenuItem.php'                 => app_path('Nova/MenuItem.php'),
         __DIR__.'/Nova/Site.php'                     => app_path('Nova/Site.php'),
 
         __DIR__.'/Policies/AdminPolicy.php.stub'     => app_path('Policies/AdminPolicy.php'),

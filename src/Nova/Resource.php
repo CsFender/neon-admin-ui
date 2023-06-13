@@ -1,52 +1,11 @@
 <?php
 
+namespace App\Nova;
+
 use Illuminate\Http\Request;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource as NovaResource;
 
-/** Nova fields.
- * 
- */
-use Laravel\Nova\Fields\{
-    Audio,
-    Avatar,
-    Badge,
-    Boolean,
-    BooleanGroup,
-    Code,
-    Color,
-    Country,
-    Currency,
-    Date,
-    DateTime,
-    Email,
-    File,
-    Gravatar,
-    Heading,
-    Hidden,
-    ID,
-    Image,
-    KeyValue,
-    Markdown,
-    MultiSelect,
-    Number,
-    Password,
-    PasswordConfirmation,
-    Select,
-    Slug,
-    Sparkline,
-    Status,
-    Stack,
-    Tag,
-    Text,
-    Textarea,
-    Timezone,
-    Trix,
-    UiAvatar,
-    URL,
-    VaporFile,
-    VaporImage,
-};
 
 /** Third party provider includes.
  * 
