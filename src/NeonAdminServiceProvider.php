@@ -69,9 +69,12 @@ class NeonAdminServiceProvider extends ServiceProvider
         __DIR__.'/Nova/MenuItem.php'                 => app_path('Nova/MenuItem.php'),
         __DIR__.'/Nova/Site.php'                     => app_path('Nova/Site.php'),
 
+        __DIR__.'/Nova/Dashboards/Main.php'          => app_path('Nova/Dashboards/Main.php'),
+
         __DIR__.'/Policies/AdminPolicy.php.stub'     => app_path('Policies/AdminPolicy.php'),
-        __DIR__.'/Policies/MenuPolicy.php.stub'      => app_path('Policies/MenuPolicy.php'),
+        __DIR__.'/Policies/AttributePolicy.php.stub' => app_path('Policies/AttributePolicy.php'),
         __DIR__.'/Policies/LinkPolicy.php.stub'      => app_path('Policies/LinkPolicy.php'),
+        __DIR__.'/Policies/MenuPolicy.php.stub'      => app_path('Policies/MenuPolicy.php'),
         __DIR__.'/Policies/SitePolicy.php.stub'      => app_path('Policies/SitePolicy.php'),
 
         __DIR__ . '/../resources/views/vendor'       => resource_path('views/vendor'),
