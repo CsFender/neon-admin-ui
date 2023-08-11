@@ -21,6 +21,8 @@ class NeonAdminServiceProvider extends ServiceProvider
    */
   public function boot(Kernel $kernel): void
   {
+    $this->loadTranslationsFrom(app_path('lang'), 'neon');
+
     if ($this->app->runningInConsole()) {
       
       /** Export migrations.
@@ -61,13 +63,13 @@ class NeonAdminServiceProvider extends ServiceProvider
       ], 'neon-configs');
 
       $this->publishes([
-        __DIR__.'/Nova/Resource.php'                 => app_path('Nova/Resource.php'), //- The root resource itself.
+        // __DIR__.'/Nova/Resource.php'                 => app_path('Nova/Resource.php'), //- The root resource itself.
 
-        __DIR__.'/Nova/Admin.php'                    => app_path('Nova/Admin.php'),
-        __DIR__.'/Nova/Link.php'                     => app_path('Nova/Link.php'),
-        __DIR__.'/Nova/Menu.php'                     => app_path('Nova/Menu.php'),
-        __DIR__.'/Nova/MenuItem.php'                 => app_path('Nova/MenuItem.php'),
-        __DIR__.'/Nova/Site.php'                     => app_path('Nova/Site.php'),
+        // __DIR__.'/Nova/Admin.php'                    => app_path('Nova/Admin.php'),
+        // __DIR__.'/Nova/Link.php'                     => app_path('Nova/Link.php'),
+        // __DIR__.'/Nova/Menu.php'                     => app_path('Nova/Menu.php'),
+        // __DIR__.'/Nova/MenuItem.php'                 => app_path('Nova/MenuItem.php'),
+        // __DIR__.'/Nova/Site.php'                     => app_path('Nova/Site.php'),
 
         __DIR__.'/Policies/AdminPolicy.php.stub'     => app_path('Policies/AdminPolicy.php'),
         __DIR__.'/Policies/MenuPolicy.php.stub'      => app_path('Policies/MenuPolicy.php'),
@@ -75,11 +77,14 @@ class NeonAdminServiceProvider extends ServiceProvider
         __DIR__.'/Policies/SitePolicy.php.stub'      => app_path('Policies/SitePolicy.php'),
 
         __DIR__ . '/../resources/views/vendor'       => resource_path('views/vendor'),
+
+        /** Deploy langugage files. */
+        __DIR__ . '/../lang'                         => app_path('lang'),
       ], 'neon-admin');
 
-      $this->publishes([
-        __DIR__.'/Providers/NovaServiceProvider.php' => app_path('Providers/NovaServiceProvider.php')
-      ], 'neon-admin-nova');
+      // $this->publishes([
+      //   __DIR__.'/Providers/NovaServiceProvider.php' => app_path('Providers/NovaServiceProvider.php')
+      // ], 'neon-admin-nova');
     }
   }
 
