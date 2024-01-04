@@ -15,9 +15,12 @@ return [
    * attention, Neon Admin uses 'App\Admin\Resources' namespace for your resources,
    * so pleasespecify namespace when generates resources.
    * 
+   * May you have different resources in different folders, so you can put all 
+   * path here, into an array.
+   * 
    * @see https://filamentphp.com/docs/3.x/panels/resources/getting-started#specifiying-a-custom-model-namespace
    */
-  'resources' => 'Admin/Resources',
+  'resources' => ['Admin/Resources'],
 
   /** By default, Filament will respond to requests from all domains. If you'd
    * like to scope it to a specific domain, you can use the domain() method,
