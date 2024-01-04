@@ -1,5 +1,5 @@
 <?php
- 
+
 namespace Neon\Admin\Resources\Pages;
 
 use Filament\Tables\Columns\Layout\Panel;
@@ -7,14 +7,17 @@ use Filament\Widgets;
 
 class Dashboard extends \Filament\Pages\Dashboard
 {
-    // protected static string $routePath = 'kezdooldal';
+  // protected static string $routePath = 'kezdooldal';
 
-    protected static ?string $title = 'Vezérlőpult';
+  public function getTitle(): string
+  {
+    return __('neon-admin::admin.navigation.home');
+  }
 
-    public function getWidgets(): array
-    {
-        return [
-                Widgets\AccountWidget::class
-            ];
-    }
+  public function getWidgets(): array
+  {
+    return [
+      Widgets\AccountWidget::class
+    ];
+  }
 }
