@@ -32,7 +32,10 @@ class NeonAdminServiceProvider extends PackageServiceProvider
       ->hasConfigFile()
       // ->publishesServiceProvider('AdminPanelProvider')
       ->hasMigrations(['create_admins_table'])
-      // ->hasCommands([AttributableClearCommand::class]);
+      ->hasTranslations()
+      ->hasCommands([
+        \Neon\Admin\Console\MakeAdmin::class
+      ])
       ->hasInstallCommand(function (InstallCommand $command) {
         $command
             ->startWith(function (InstallCommand $command) {
@@ -62,13 +65,11 @@ class NeonAdminServiceProvider extends PackageServiceProvider
             ->publishMigrations()
             ->askToRunMigrations()
             ->endWith(function (InstallCommand $installCommand) {
-                // $installCommand->line('');
-                // $installCommand->info("We've added app\Providers\DynamicServersProvider to your project.");
-                // $installCommand->info("Feel free to customize it to your needs.");
-                // $installCommand->line('');
-                // $installCommand->info('You can view all docs at https://spatie.be/docs/laravel-dynamic-servers');
-                // $installCommand->line('');
-                $installCommand->info('Thank you very much for installing Neon package!');
+                $installCommand->call('neon:admin');
+                $installCommand->line('');
+                $installCommand->info('You can view all docs at https://neon.elementary-interacctive.dev/docs');
+                $installCommand->line('');
+                $installCommand->info('Thank you very much for installing N30N packages!');
             });
           })
       ;
