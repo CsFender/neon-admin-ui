@@ -29,7 +29,7 @@ class AttributeResource extends Resource
 
   public static function getNavigationLabel(): string
   {
-    return trans('neon-admin::admin.resources.variables');
+    return trans('neon-admin::admin.resources.attributables.title');
   }
 
   public static function getNavigationGroup(): string
@@ -52,7 +52,7 @@ class AttributeResource extends Resource
     return $form
       ->schema([
         Select::make('class')
-          ->label('Erőforrás')
+          ->label(__('neon-admin::admin.resources.attributables.form.fields.class.label'))
           ->options(function () {
             $array = [];
             $resources = app('filament')->getResources();
@@ -68,27 +68,13 @@ class AttributeResource extends Resource
                 $array[$_r->getModel()] = $_r::getNavigationLabel();
               }
             }
-            // dd(in_array('Neon\Attributable\Models\Traits\Attributable', class_uses_recursive('\Neon\Site\Models\Site')), $array);
-            // foreach (get_declared_classes() as $class)
-            // {
-            //   // if (in_array('Neon\Attributable\Models\Traits\Attributable', class_uses_recursive($class)))
-            //   // {
-            //   //   $array[] = $class;
-            //   // }
-            //   // $array = array_merge($array, class_uses_recursive($class));
-
-
-            //   // if(strpos($class, $namespace) === 0){
-            //   //     $c = substr($class, strlen($namespace));
-            //   //     echo 'class ' . $c . ' exists in namespace '. $namespace . '<br/>'; 
-            //   // }
-            // }
             return $array;
           })
           ->columns(2),
-        Fieldset::make('Name')
+        Fieldset::make(__('neon-admin::admin.resources.attributables.form.fieldset.name'))
           ->schema([
             TextInput::make('name')
+              ->label(__('neon-admin::admin.resources.attributables.form.fields.name.label'))
               ->afterStateUpdated(function ($get, $set, ?string $state) {
                   if (!$get('is_slug_changed_manually') && filled($state)) {
                       $set('slug', Str::slug($state));
@@ -98,10 +84,22 @@ class AttributeResource extends Resource
               ->required()
               ->maxLength(255),
             TextInput::make('slug')
+              ->label(__('neon-admin::admin.resources.attributables.form.fields.slug.label'))
               ->afterStateUpdated(function (Closure $set) {
                   $set('is_slug_changed_manually', true);
               })
               ->required()
+          ])
+          ->columns(2),
+        Select::make('cast_as')
+          ->label(__('neon-admin::admin.resources.attributables.form.fields.cast_as.label'))
+          ->searchable()
+          ->options([
+            'string'  => __('neon-admin::admin.resources.attributables.form.fields.cast_as.options.string'),
+            'integer' => __('neon-admin::admin.resources.attributables.form.fields.cast_as.options.integer'),
+            'float'   => __('neon-admin::admin.resources.attributables.form.fields.cast_as.options.float'),
+            'boolean' => __('neon-admin::admin.resources.attributables.form.fields.cast_as.options.boolean'),
+            'array'   => __('neon-admin::admin.resources.attributables.form.fields.cast_as.options.array'),
           ])
           ->columns(2),
         Select::make('field')
@@ -120,16 +118,6 @@ class AttributeResource extends Resource
             'alphaNum'  => 'Csak betűk és számok',
             'required'  => 'Kötelező kitölteni',
             'ascii'     => 'Csak ASCII karakterek'
-          ]),
-        Select::make('cast_as')
-          ->label('Adattípus')
-          ->searchable()
-          ->options([
-            'string'  => 'Szöveg',
-            'integer' => 'Egész szám',
-            'float'   => 'Tizedes tört (Lebegőpontos szám)',
-            'boolean' => 'Logikai (igaz/hamis) érték',
-            'array'   => 'Tömb',
           ]),
         KeyValue::make('params')
           ->label('Paraméterek')
