@@ -1,6 +1,14 @@
 <?php
 
 return [
+  "actions"    => [
+    "acivate"       => [
+      "label"         => "Activate selected items"
+    ],
+    "inacivate"     => [
+      "label"         => "Inactivate selected items"
+    ],
+  ],
   "navigation" => [
     "home"          => "Home",
     "settings"      => "Settings",
@@ -36,8 +44,9 @@ return [
           "slug"          => [
             "label"         => "Identifier"
           ],
-          "cast_as"         => [
+          "cast_as"       => [
             "label"         => "Cast as",
+            "help"          => "Technical parameter, how to store the variable in database.",
             "options"       => [
               "string"        => "String",
               "integer"       => "Integer",
@@ -45,6 +54,26 @@ return [
               "boolean"       => "Boolean (true/false)",
               "array"         => "Array",
             ]
+          ],
+          "field"         => [
+            "label"         => "Input field",
+            "options"       => [
+              "text"         => "Text input",
+            ],
+          ],
+          "rules"         => [
+            "label"         => "Rules",
+            "options"       => [
+              "activeUrl"     => "URL",
+              "alpha"         => "Only A-Z letters",
+              "alphaDash"     => "A-Z letters and - _",
+              "alphaNum"      => "Numbers and letters",
+              "required"      => "Required",
+              "ascii"         => "ASCII",
+            ],
+          ],
+          "params"          => [
+            "label"         => "Parameters"
           ],
           "slug"          => [
             "label"         => "Identifier"
@@ -109,6 +138,12 @@ return [
           ],
           "slug"          => [
             "label"         => "Identifier"
+          ],
+          "site"          => [
+            "label"         => "Website"
+          ],
+          "status"          => [
+            "label"         => "Status"
           ]
         ]
       ]
