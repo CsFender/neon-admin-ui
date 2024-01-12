@@ -11,6 +11,11 @@ return [
    */
   'path'      => env('NEON_ADMIN_PATH', 'admin'),
 
+  // 'logo'      => [
+  //   'view'      => 'sfsdfs.sdfsdfs',
+  //   'height'    => '1.5rem'
+  // ],
+
   'groups'    => [
     'Cica',
     'Micw'
