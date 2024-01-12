@@ -24,6 +24,24 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
 {
+  private function scanNeonResources(): array
+  {
+    $resources = [
+      \Neon\Admin\Resources\SiteResource::class,
+      \Neon\Admin\Resources\MenuResource::class,
+      \Neon\Admin\Resources\AdminResource::class,
+      \Neon\Admin\Resources\AttributeResource::class,
+    ];
+
+    if (class_exists(\Neon\News\Models\News::class))
+    {
+      $resources[] = \Neon\Admin\Resources\NewsResource::class;
+    }
+
+
+    return $resources;
+  }
+
   public function panel(Panel $panel): Panel
   {
     // app()->setLocale('hu');
@@ -35,7 +53,7 @@ class AdminPanelProvider extends PanelProvider
     );
 
     $admin = $panel
-      // ->default()
+      ->default()
       ->id('neon-admin')
       ->colors(config('neon-admin.colors', [
         'primary'   => '#3b0764',
@@ -59,10 +77,13 @@ class AdminPanelProvider extends PanelProvider
         TrustProxies::class,
         TrustHosts::class
       ])
-      ->discoverResources(in: base_path('/vendor/neon/admin-ui/src/Resources'), for: 'Neon\\Admin\\Resources')
-      ->pages(array_merge([
-        \Neon\Admin\Resources\Pages\Dashboard::class, // The basic Neon Admin Dashboard.
-      ], config('neon-admin.pages', [])));
+      // ->discoverResources(in: base_path('/vendor/neon/admin-ui/src/Resources'), for: 'Neon\\Admin\\Resources')
+      ->resources($this->scanNeonResources())
+      ->discoverPages(in: base_path('/vendor/neon/admin-ui/src/Pages'), for: 'Neon\\Admin\\Pages')
+      ->pages([
+        \Neon\Admin\Pages\Dashboard::class, // The basic Neon Admin Dashboard.
+      ])
+      ->discoverWidgets(in: base_path('/vendor/neon/admin-ui/src/Widgets'), for: 'Neon\\Admin\\Widgets');
     // ->topNavigation();
 
     if (config('neon-admin.path', 'admin') && !config('neon-admin.domain')) {
@@ -93,34 +114,51 @@ class AdminPanelProvider extends PanelProvider
           ->discoverResources(in: app_path($path), for: 'App\\Admin\\Resources');
       }
     }
-
+    if (is_array(config('neon-admin.pages')) && !empty(config('neon-admin.pages'))) {
+      foreach (config('neon-admin.pages') as $path) {
+        $admin
+          ->discoverPages(in: app_path($path), for: 'App\\Admin\\Pages');
+      }
+    }
     if (is_array(config('neon-admin.widgets')) && !empty(config('neon-admin.widgets'))) {
       foreach (config('neon-admin.widgets') as $path) {
         $admin
           ->discoverWidgets(in: app_path($path), for: 'App\\Admin\\Widgets');
       }
     }
-
-    if (config('neon-admin.groups')) {
+    if (is_array(config('neon-admin.logo')) && !empty(config('neon-admin.logo'))) {
       $admin
-        ->navigationGroups(array_merge(config('neon-admin.groups', []), [
-          NavigationGroup::make()
-            ->label(fn (): string => __('neon-admin::admin.navigation.web')),
-          NavigationGroup::make()
-            ->label(fn (): string => __('neon-admin::admin.navigation.settings'))
-            ->collapsed(),
-        ]));
+        ->brandLogo(fn () => view(config('neon-admin.logo.view')))
+        ->brandLogoHeight(config('neon-admin.logo.height'));
     }
 
-      // ->globalSearch(true)
-      // ->globalSearchKeyBindings(['command+f', 'ctrl+f'])
+    // if (config('neon-admin.groups')) {
+    //   $admin
+    //     ->navigationGroups(array_merge(config('neon-admin.groups', []), [
+    //       'web', //__('neon-admin::admin.navigation.web'),
+    //       'settings' //__('neon-admin::admin.navigation.settings')
+    //     ]));
+    // }
 
+    $admin
+      ->navigationGroups(array_merge(config('neon-admin.groups', []), [
+        NavigationGroup::make()
+          ->label(fn (): string => __('neon-admin::admin.navigation.web')),
+        NavigationGroup::make()
+          ->label(fn (): string => __('neon-admin::admin.navigation.settings'))
+          ->collapsed(),
+      ]));
+    // ->navigationItems([
+    //   \Filament\Navigation\NavigationItem::make('Analytics')
+    //       ->url('https://filament.pirsch.io', shouldOpenInNewTab: true)
+    //       ->icon('heroicon-o-presentation-chart-line')
+    //       ->group('Reports')
+    //       ->sort(3),]);
 
+    $admin
+      ->globalSearch(true)
+      ->globalSearchKeyBindings(['command+k', 'ctrl+k']);
 
-      // ->discoverWidgets(in: app_path('Neon/Widgets'), for: 'App\\Neon\\Widgets')
-
-      // // ->viteTheme('resources/css/filament/admin2/theme.css')
-    ;
     return $admin;
   }
 }
