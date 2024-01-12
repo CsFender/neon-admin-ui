@@ -21,6 +21,8 @@ use Neon\Attributable\Models\Attribute;
 
 class AttributeResource extends Resource
 {
+  protected static ?int $navigationSort = 98;
+
   protected static ?string $model = Attribute::class;
   
   protected static ?string $navigationIcon = 'heroicon-o-code-bracket-square';
@@ -101,26 +103,27 @@ class AttributeResource extends Resource
             'boolean' => __('neon-admin::admin.resources.attributables.form.fields.cast_as.options.boolean'),
             'array'   => __('neon-admin::admin.resources.attributables.form.fields.cast_as.options.array'),
           ])
+          ->helperText(__('neon-admin::admin.resources.attributables.form.fields.cast_as.help'))
           ->columns(2),
         Select::make('field')
-          ->label('Beviteli mező')
+          ->label(__('neon-admin::admin.resources.attributables.form.fields.field.label'))
           ->options([
-            'text' => 'Szöveges beviteli mező'
+            'text' => __('neon-admin::admin.resources.attributables.form.fields.field.options.text')
           ]),
         Select::make('rules')
-          ->label('Ellenőrzési szabályok')
+          ->label(__('neon-admin::admin.resources.attributables.form.fields.rules.label'))
           ->multiple()
           ->searchable()
           ->options([
-            'activeUrl' => 'URL',
-            'alpha'     => 'Csak betűk',
-            'alphaDash' => 'Csak betűk, számok és kötőjel és aláhúzásjel',
-            'alphaNum'  => 'Csak betűk és számok',
-            'required'  => 'Kötelező kitölteni',
-            'ascii'     => 'Csak ASCII karakterek'
+            'activeUrl' => __('neon-admin::admin.resources.attributables.form.fields.rules.options.activeUrl'), // 'URL',
+            'alpha'     => __('neon-admin::admin.resources.attributables.form.fields.rules.options.alpha'), // 'Csak betűk',
+            'alphaDash' => __('neon-admin::admin.resources.attributables.form.fields.rules.options.alphaDash'), // 'Csak betűk, számok és kötőjel és aláhúzásjel',
+            'alphaNum'  => __('neon-admin::admin.resources.attributables.form.fields.rules.options.alphaNum'), // 'Csak betűk és számok',
+            'required'  => __('neon-admin::admin.resources.attributables.form.fields.rules.options.required'), // 'Kötelező kitölteni',
+            'ascii'     => __('neon-admin::admin.resources.attributables.form.fields.rules.options.ascii'), // 'Csak ASCII karakterek'
           ]),
         KeyValue::make('params')
-          ->label('Paraméterek')
+          ->label(__('neon-admin::admin.resources.attributables.form.fields.params.label'))
       ]);
   }
 
@@ -128,13 +131,17 @@ class AttributeResource extends Resource
   {
     return $table
       ->columns([
-        //
+        Tables\Columns\TextColumn::make('name')
+          ->label(__('neon-admin::admin.resources.attributables.form.fields.name.label'))
+          ->description(fn (Attribute $record): string => $record->class)
+          ->searchable(),
       ])
       ->filters([
-        //
+        Tables\Filters\TrashedFilter::make(),
       ])
       ->actions([
-        Tables\Actions\EditAction::make(),
+        Tables\Actions\EditAction::make()
+          ->slideOver(),
         Tables\Actions\DeleteAction::make(),
       ])
       ->bulkActions([

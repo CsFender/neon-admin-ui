@@ -4,6 +4,7 @@ namespace Neon\Admin\Resources;
 
 use Neon\Admin\Resources\SiteResource\Pages;
 use Neon\Admin\Resources\SiteResource\RelationManagers;
+use Neon\Admin\Resources\Traits\NeonAdmin;
 use Neon\Site\Models\Site;
 use Closure;
 use Filament\Forms;
@@ -14,10 +15,12 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -26,17 +29,21 @@ use Neon\Attributable\Models\Attribute;
 
 class SiteResource extends Resource
 {
+  use NeonAdmin;
+
   protected static ?int $navigationSort = 1;
 
-  protected static ?string $model = Site::class;
+  public static ?string $model = Site::class;
 
   protected static ?string $navigationIcon = 'heroicon-o-globe-europe-africa';
 
   protected static ?string $activeNavigationIcon = 'heroicon-s-globe-europe-africa';
 
+  protected static ?string $recordTitleAttribute = 'title';
+
   public static function getNavigationLabel(): string
   {
-    return trans('neon-admin::admin.navigation.site');
+    return __('neon-admin::admin.navigation.site');
   }
 
   public static function getNavigationGroup(): string
@@ -46,7 +53,7 @@ class SiteResource extends Resource
 
   public static function getModelLabel(): string
   {
-    return trans('neon-admin::admin.models.site');
+    return __('neon-admin::admin.models.site');
   }
 
   public static function getPluralModelLabel(): string
@@ -54,34 +61,7 @@ class SiteResource extends Resource
     return __('neon-admin::admin.models.sites');
   }
 
-  public static function __attributables(): array
-  {
-    $attributes = Attribute::where('class', self::$model)->get();
-    $a = [];
-
-    foreach ($attributes as $attribute)
-    {
-      $fieldComponment = 'Filament\Forms\Components\\';
-
-      switch ($attribute['field'])
-      {
-        case 'text':
-          $fieldComponment .= 'TextInput';
-          break;
-      }
-      $field = $fieldComponment::make($attribute['slug'])
-        ->label($attribute['name']);
-      foreach ($attribute['rules'] as $rule)
-      {
-        $field->$rule();
-      }
-      $a[] = $field;
-    }
-
-    return $a;
-  }
-
-  public static function __form(): array
+  public static function items(): array
   {
     $t = [
       Fieldset::make(trans('neon-admin::admin.resources.sites.form.fieldset.name'))
@@ -168,30 +148,6 @@ class SiteResource extends Resource
     return $t;
   }
 
-  public static function form(Form $form): Form
-  {
-    if (in_array(\Neon\Attributable\Models\Traits\Attributable::class, class_uses_recursive(self::$model))) {
-      return $form
-        ->schema([
-          Tabs::make('Tabs')
-            ->tabs([
-              Tabs\Tab::make(__('neon-admin::admin.resources.sites.form.tabs.basic'))
-                ->schema(self::__form())
-                ->columns(1),
-              Tabs\Tab::make(__('neon-admin::admin.resources.sites.form.tabs.attributables'))
-                ->icon('heroicon-o-adjustments-horizontal')
-                ->schema(self::__attributables()),
-            ])
-            ->activeTab(1)
-        ])
-        ->columns(1);
-    } else {
-      return $form
-        ->schema(self::__form())
-        ->columns(1);
-    }
-  }
-
   public static function table(Table $table): Table
   {
     return $table
@@ -236,13 +192,11 @@ class SiteResource extends Resource
             }
           }),
         Tables\Columns\TextColumn::make('created_at')
-          ->label('Létrehozva')
           ->dateTime()
           ->sortable()
           ->since()
           ->toggleable(isToggledHiddenByDefault: true),
         Tables\Columns\TextColumn::make('updated_at')
-          ->label('Utoljára módosítva')
           ->dateTime()
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true)
@@ -272,13 +226,7 @@ class SiteResource extends Resource
         Tables\Actions\ForceDeleteAction::make(),
         Tables\Actions\RestoreAction::make(),
       ])
-      ->bulkActions([
-        Tables\Actions\BulkActionGroup::make([
-          Tables\Actions\DeleteBulkAction::make(),
-          Tables\Actions\ForceDeleteBulkAction::make(),
-          Tables\Actions\RestoreBulkAction::make(),
-        ]),
-      ]);
+      ->bulkActions(self::bulkActions());
   }
 
   public static function getPages(): array
@@ -288,10 +236,4 @@ class SiteResource extends Resource
     ];
   }
 
-  // public static function getEloquentQuery(): Builder
-  // {
-  //   return parent::getEloquentQuery()
-  //     ->withoutGlobalScopes([
-  //     ]);
-  // }
 }

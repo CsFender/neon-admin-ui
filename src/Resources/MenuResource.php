@@ -21,16 +21,20 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+use Neon\Admin\Resources\Traits\NeonAdmin;
 use Neon\Admin\Resources\MenuResource\Pages;
 use Neon\Admin\Resources\SiteResource\RelationManagers;
 use Neon\Attributable\Models\Attribute;
 use Neon\Models\Menu;
 use Neon\Models\Scopes\ActiveScope;
 use Neon\Models\Statuses\BasicStatus;
+use Neon\Site\Models\Scopes\SiteScope;
 use Neon\Site\Models\Site;
 
 class MenuResource extends Resource
 {
+  use NeonAdmin;
+
   protected static ?int $navigationSort = 2;
 
   protected static ?string $model = Menu::class;
@@ -38,6 +42,8 @@ class MenuResource extends Resource
   protected static ?string $navigationIcon = 'heroicon-o-bars-3';
 
   protected static ?string $activeNavigationIcon = 'heroicon-s-bars-3';
+
+  protected static ?string $recordTitleAttribute = 'title';
 
   // public static function getNavigationParentItem(): string
   // {
@@ -64,31 +70,7 @@ class MenuResource extends Resource
     return __('neon-admin::admin.models.menu');
   }
 
-  public static function __attributables(): array
-  {
-    $attributes = Attribute::where('class', self::$model)->get();
-    $a = [];
-
-    foreach ($attributes as $attribute) {
-      $fieldComponment = 'Filament\Forms\Components\\';
-
-      switch ($attribute['field']) {
-        case 'text':
-          $fieldComponment .= 'TextInput';
-          break;
-      }
-      $field = $fieldComponment::make($attribute['slug'])
-        ->label($attribute['name']);
-      foreach ($attribute['rules'] as $rule) {
-        $field->$rule();
-      }
-      $a[] = $field;
-    }
-
-    return $a;
-  }
-
-  public static function __form(): array
+  public static function items(): array
   {
     $t = [
       Fieldset::make(trans('neon-admin::admin.resources.menu.form.fieldset.name'))
@@ -112,61 +94,15 @@ class MenuResource extends Resource
         ])
         ->columns(2),
       Select::make('status')
-        ->label('Státusz')
+        ->label(trans('neon-admin::admin.resources.menu.form.fields.status.label'))
         ->required()
         ->reactive()
-        ->default(BasicStatus::New)
+        ->default(BasicStatus::default())
         ->options(BasicStatus::class),
-      // MorphToSelect::make('site')
-      //   ->types([
-      //     MorphToSelect\Type::make(Site::class)
-      //       ->titleAttribute('name')
-      //   ]),
       Select::make('site')
-        ->relationship(titleAttribute: 'title')
-      // FileUpload::make('favicon')
-      //   ->image()
-      //   ->getUploadedFileNameForStorageUsing(
-      //     fn (TemporaryUploadedFile $file): string => (string) str($file->getClientOriginalName())
-      //       ->prepend('neon-site-'),
-      //   ),
-      // Repeater::make('domains')
-      //   ->label(__('neon-admin::admin.resources.menu.form.fields.domains.label'))
-      //   ->helperText(__('neon-admin::admin.resources.menu.form.fields.domains.help'))
-      //   ->simple(
-      //     TextInput::make('domain')
-      //       // ->activeUrl()
-      //       ->nullable(),
-      //   )
-      //   ->addActionLabel(__('neon-admin::admin.resources.menu.form.fields.domains.new'))
-      //   ->columns(2),
-      // Repeater::make('prefixes')
-      //   ->label(__('neon-admin::admin.resources.menu.form.fields.prefixes.label'))
-      //   ->helperText(__('neon-admin::admin.resources.menu.form.fields.prefixes.help'))
-      //   ->simple(
-      //     TextInput::make('prefix')
-      //       ->alphaDash()
-      //       ->nullable(),
-      //   )
-      //   ->addActionLabel(__('neon-admin::admin.resources.menu.form.fields.prefixes.new'))
-      //   ->columns(2),
-      // Select::make('locale')
-      //   ->label(__('neon-admin::admin.resources.menu.form.fields.locale.label'))
-      //   ->options(function (): array {
-      //     $result = array();
-
-      //     if (class_exists(\Mcamara\LaravelLocalization\LaravelLocalization::class)) {
-      //       foreach (LaravelLocalization::getLocalesOrder() as $locale => $locale_data) {
-      //         $result[$locale] = ucfirst($locale_data['native']);
-      //       }
-      //     }
-
-      //     return $result;
-      //   }),
-      // Toggle::make('is_default')
-      //   ->label(__('neon-admin::admin.resources.menu.form.fields.is_default.label'))
-      //   ->onIcon('heroicon-m-check')
-      //   ->onColor('success')
+        ->label(trans('neon-admin::admin.resources.menu.form.fields.site.label'))
+        ->multiple()
+        ->relationship(titleAttribute: 'title'),
     ];
     // if (in_array(\Neon\Attributable\Models\Traits\Attributable::class, class_uses_recursive(self::$model))) {
     //   return Tabs::make('Tabs')
@@ -188,73 +124,49 @@ class MenuResource extends Resource
     return $t;
   }
 
-  public static function form(Form $form): Form
-  {
-    if (in_array(\Neon\Attributable\Models\Traits\Attributable::class, class_uses_recursive(self::$model))) {
-      return $form
-        ->schema([
-          Tabs::make('Tabs')
-            ->tabs([
-              Tabs\Tab::make(__('neon-admin::admin.resources.menu.form.tabs.basic'))
-                ->schema(self::__form())
-                ->columns(1),
-              Tabs\Tab::make(__('neon-admin::admin.resources.menu.form.tabs.attributables'))
-                ->icon('heroicon-o-adjustments-horizontal')
-                ->schema(self::__attributables()),
-            ])
-            ->activeTab(1)
-        ])
-        ->columns(1);
-    } else {
-      return $form
-        ->schema(self::__form())
-        ->columns(1);
-    }
-  }
-
   public static function table(Table $table): Table
   {
     return $table
       ->columns([
-        // Tables\Columns\TextColumn::make('id')
-        //     ->searchable(),
         Tables\Columns\TextColumn::make('title')
           ->label(__('neon-admin::admin.resources.menu.form.fields.title.label'))
+          ->description(fn (Menu $record): string => "
+          <x-neon-menu id=\"{$record->slug}\"> <x-slot:tools> ... </x-slot> </x-neon-menu>")
           ->searchable(),
-        
-
-
-
-
-        Tables\Columns\TextColumn::make('created_at')
-          ->label('Létrehozva')
+        Tables\Columns\TextColumn::make('site.title')
+          ->label(__('neon-admin::admin.resources.menu.form.fields.site.label'))
+          ->listWithLineBreaks()
+          ->bulleted()
+          ->searchable(),
+        Tables\Columns\IconColumn::make('status')
+          ->label(__('neon-admin::admin.resources.menu.form.fields.status.label'))
+          ->icon(fn (BasicStatus $state): string => match ($state) {
+              BasicStatus::New      => 'heroicon-o-sparkles',
+              BasicStatus::Active   => 'heroicon-o-check-circle',
+              BasicStatus::Inactive => 'heroicon-o-x-circle',
+          })
+          ->color(fn (BasicStatus $state): string => match ($state) {
+              BasicStatus::New      => 'gray',
+              BasicStatus::Active   => 'success',
+              BasicStatus::Inactive => 'danger',
+          })
+          ->searchable()
+          ->sortable(),
+      Tables\Columns\TextColumn::make('created_at')
           ->dateTime()
           ->sortable()
-          ->since()
           ->toggleable(isToggledHiddenByDefault: true),
-        Tables\Columns\TextColumn::make('updated_at')
-          ->label('Utoljára módosítva')
+      Tables\Columns\TextColumn::make('updated_at')
           ->dateTime()
           ->sortable()
-          ->toggleable(isToggledHiddenByDefault: true)
-          ->since(),
+          ->toggleable(isToggledHiddenByDefault: true),
+      Tables\Columns\TextColumn::make('deleted_at')
+          ->dateTime()
+          ->sortable()
+          ->toggleable(isToggledHiddenByDefault: true),
       ])
       ->filters([
         Tables\Filters\TrashedFilter::make(),
-        Tables\Filters\SelectFilter::make('locale')
-          ->options(function (): array {
-            $result = array();
-
-            if (class_exists(\Mcamara\LaravelLocalization\LaravelLocalization::class)) {
-              foreach (LaravelLocalization::getLocalesOrder() as $locale => $locale_data) {
-                $result[$locale] = ucfirst($locale_data['native']);
-              }
-            }
-
-            return $result;
-          })
-          ->label(__('neon-admin::admin.resources.menu.form.fields.locale.label'))
-          ->searchable(),
       ])
       ->actions([
         Tables\Actions\EditAction::make()
@@ -263,13 +175,7 @@ class MenuResource extends Resource
         Tables\Actions\ForceDeleteAction::make(),
         Tables\Actions\RestoreAction::make(),
       ])
-      ->bulkActions([
-        Tables\Actions\BulkActionGroup::make([
-          Tables\Actions\DeleteBulkAction::make(),
-          Tables\Actions\ForceDeleteBulkAction::make(),
-          Tables\Actions\RestoreBulkAction::make(),
-        ]),
-      ]);
+      ->bulkActions(self::bulkActions());
   }
 
   public static function getPages(): array
@@ -283,7 +189,9 @@ class MenuResource extends Resource
   {
       return parent::getEloquentQuery()
           ->withoutGlobalScopes([
-              ActiveScope::class
+              ActiveScope::class,
+              SiteScope::class,
+              SoftDeletingScope::class
           ]);
   }
 }

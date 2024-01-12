@@ -17,6 +17,8 @@ use Illuminate\Support\Str;
 
 class AdminResource extends Resource
 {
+  protected static ?int $navigationSort = 99;
+  
   protected static ?string $model = Admin::class;
 
   protected static ?string $navigationIcon = 'heroicon-o-user';
@@ -71,19 +73,15 @@ class AdminResource extends Resource
         // Tables\Columns\TextColumn::make('id')
         //     ->searchable(),
         Tables\Columns\TextColumn::make('name')
-          ->label('Név')
           ->searchable(),
         Tables\Columns\TextColumn::make('email')
-          ->label('E-mail')
           ->searchable(),
         Tables\Columns\TextColumn::make('created_at')
-          ->label('Létrehozva')
           ->dateTime()
           ->sortable()
           ->since()
           ->toggleable(isToggledHiddenByDefault: true),
         Tables\Columns\TextColumn::make('updated_at')
-          ->label('Utoljára módosítva')
           ->dateTime()
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true)
