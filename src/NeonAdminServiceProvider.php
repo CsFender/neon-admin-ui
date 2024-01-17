@@ -42,6 +42,8 @@ class NeonAdminServiceProvider extends PackageServiceProvider
               $command->line('');
               $command->info('Installing the necessary Filament components and assets.');
               $command->line('');
+
+              /** All the filament stuff... */
               $command->callSilent('vendor:publish', ['--tag' => 'filament-actions-migrations']);
               $command->callSilent('vendor:publish', ['--tag' => 'filament-actions-translations']);
               $command->callSilent('vendor:publish', ['--tag' => 'filament-actions-views']);
@@ -59,6 +61,13 @@ class NeonAdminServiceProvider extends PackageServiceProvider
               $command->callSilent('vendor:publish', ['--tag' => 'filament-translations']);
               $command->callSilent('vendor:publish', ['--tag' => 'filament-views']);
               $command->callSilent('vendor:publish', ['--tag' => 'filament-widgets-views']);
+
+              // /** Activity log. */
+              // $command->callSilent('vendor:publish', [
+              //   '--provider'  => "Spatie\Activitylog\ActivitylogServiceProvider",
+              //   '--tag'       => "activitylog-migrations"
+              // ]);
+
               $command->callSilent('notifications:table'); // Notifications' database table.
             })
             ->publishConfigFile()

@@ -31,7 +31,7 @@ return [
    * @see https://filamentphp.com/docs/3.x/panels/resources/getting-started#specifiying-a-custom-model-namespace
    */
   'resources' => [
-    'Admin/Resources'
+    // 'Admin/Resources'
   ],
 
   /** By default, Filament will respond to requests from all domains. If you'd
