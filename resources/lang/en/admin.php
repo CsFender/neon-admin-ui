@@ -14,7 +14,8 @@ return [
     "settings"      => "Settings",
     "web"           => "Website",
     "site"          => "Domains",
-    "menu"          => "Menus"
+    "menu"          => "Menus",
+    "news"          => "News"
   ],
   "models" => [
     "admin"         => "Administrator",
@@ -24,7 +25,9 @@ return [
     "site"          => "Site",
     "sites"         => "Sites",
     "menu"          => "Menu",
-    "menus"         => "Menus"
+    "menus"         => "Menus",
+    "news_item"     => "News Post",
+    "news"          => "News",
   ],
   "resources" => [
     "admins"        => "Administrators",
@@ -144,6 +147,69 @@ return [
           ],
           "status"          => [
             "label"         => "Status"
+          ]
+        ]
+      ]
+    ],
+    "news"         => [
+      "title"         => "News",
+      "table"         => [
+        'tabs'          => [
+          'all'           => 'All',
+          'new'           => 'New',
+          'live'          => 'Live',
+          'pinned'        => 'Pinned',
+          'archive'       => 'Archive',
+        ]
+      ],
+      "form"          => [
+        "tabs"          => [
+          "basic"         => "Basic",
+          "attributables" => "Advanced"
+        ],
+        "filters"       => [
+          "is_active"     => "Is Active?",
+          "is_published"  => "Is Published?"
+        ],
+        "fieldset"      => [
+          "publishing"     => "Publishing"
+        ],
+        "fields"        => [
+          "title"         => [
+            "label"         => "Title"
+          ],
+          "slug"          => [
+            "label"         => "Link"
+          ],
+          "header_image"  => [
+            "label"         => "Header Image"
+          ],
+          "lead"          => [
+            "label"         => "Lead"
+          ],
+          "content"       => [
+            "label"         => "Content"
+          ],
+          "content_image" => [
+            "label"         => "Content Images"
+          ],
+          "site"          => [
+            "label"         => "Website"
+          ],
+          "tags"          => [
+            "label"         => "Tags"
+          ],
+          "pinned"        => [
+            "label"         => "Pinned"
+          ],
+          "status"        => [
+            "label"         => "Status"
+          ],
+          "published_at"  => [
+            "label"         => "Published at"
+          ],
+          "expired_at"    => [
+            "label"         => "Expired at"
           ]
         ]
       ]
