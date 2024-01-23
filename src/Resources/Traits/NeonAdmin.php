@@ -47,18 +47,34 @@ trait NeonAdmin
 
   public static function form(Forms\Form $form): Forms\Form
   {
-    if (in_array(\Neon\Attributable\Models\Traits\Attributable::class, class_uses_recursive(self::$model))) {
+    $tabs = [
+      Forms\Components\Tabs\Tab::make(__('neon-admin::admin.resources.generic.form.tabs.basic'))
+        ->schema(self::items())
+        ->columns(1)
+    ];
+
+    if (
+      in_array(\Neon\Attributable\Models\Traits\Attributable::class, class_uses_recursive(self::$model))
+      && count(self::attributables()) > 0
+    ) {
+
+      $tabs[] = Forms\Components\Tabs\Tab::make(__('neon-admin::admin.resources.generic.form.tabs.attributables'))
+        ->icon('heroicon-o-adjustments-horizontal')
+        ->schema(self::attributables());
+    }
+
+    
+    try {
+      $tabs = array_merge($tabs, self::tabs());
+    } catch(\Exception $e) {
+
+    }
+
+    if (count($tabs) > 1) {
       return $form
         ->schema([
           Forms\Components\Tabs::make('Tabs')
-            ->tabs([
-              Forms\Components\Tabs\Tab::make(__('neon-admin::admin.resources.sites.form.tabs.basic'))
-                ->schema(self::items())
-                ->columns(1),
-              Forms\Components\Tabs\Tab::make(__('neon-admin::admin.resources.sites.form.tabs.attributables'))
-                ->icon('heroicon-o-adjustments-horizontal')
-                ->schema(self::attributables()),
-            ])
+            ->tabs($tabs)
             ->activeTab(1)
         ])
         ->columns(1);

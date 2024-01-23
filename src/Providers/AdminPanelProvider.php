@@ -29,6 +29,8 @@ class AdminPanelProvider extends PanelProvider
     $resources = [
       \Neon\Admin\Resources\SiteResource::class,
       \Neon\Admin\Resources\MenuResource::class,
+      \Neon\Admin\Resources\MenuItemResource::class,
+      \Neon\Admin\Resources\ContentResource::class,
       \Neon\Admin\Resources\AdminResource::class,
       \Neon\Admin\Resources\AttributeResource::class,
     ];

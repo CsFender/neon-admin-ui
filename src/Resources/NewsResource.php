@@ -122,7 +122,7 @@ class NewsResource extends Resource
       Fieldset::make(__('neon-admin::admin.resources.news.form.fieldset.publishing'))
         ->schema([
           Select::make('site')
-            ->label(trans('neon-admin::admin.resources.menu.form.fields.site.label'))
+            ->label(trans('neon-admin::admin.resources.news.form.fields.site.label'))
             ->multiple()
             ->relationship(titleAttribute: 'title'),
           Select::make('status')
@@ -131,8 +131,11 @@ class NewsResource extends Resource
             ->reactive()
             ->default(BasicStatus::default())
             ->options(BasicStatus::class),
-          Forms\Components\DateTimePicker::make('published_at'),
-          Forms\Components\DateTimePicker::make('expired_at'),
+          Forms\Components\DateTimePicker::make('published_at')
+            ->label(trans('neon-admin::admin.resources.news.form.fields.published.label')),
+          Forms\Components\DateTimePicker::make('expired_at')
+            ->label(trans('neon-admin::admin.resources.news.form.fields.expired_at.label'))
+            ->minDate(now()),
           Toggle::make('pinned')
             ->label(__('neon-admin::admin.resources.news.form.fields.pinned.label'))
             ->onIcon('heroicon-o-check-circle'),
@@ -192,6 +195,9 @@ class NewsResource extends Resource
           ->toggleable(isToggledHiddenByDefault: true),
       ])
       ->filters([
+        Tables\Filters\SelectFilter::make('site')
+          ->label(__('neon-admin::admin.resources.news.form.fields.site.label'))
+          ->relationship('site', 'title'),
         // Filter::make('is_active')
         //   ->query(fn (Builder $query): Builder => $query->where('status', BasicStatus::Active))
         //   ->label(__('neon-admin::admin.resources.news.form.filters.is_active'))

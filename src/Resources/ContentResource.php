@@ -3,13 +3,13 @@
 namespace Neon\Admin\Resources;
 
 
-use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\MorphToSelect;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -17,32 +17,32 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Neon\Admin\Resources\Traits\NeonAdmin;
-use Neon\Admin\Resources\MenuResource\Pages;
-use Neon\Admin\Resources\MenuResource\RelationManagers;
+use Neon\Admin\Resources\ContentResource\Pages;
+use Neon\Admin\Resources\ContentResource\RelationManagers;
 use Neon\Attributable\Models\Attribute;
-use Neon\Models\Menu;
+use Neon\Models\Link;
 use Neon\Models\Scopes\ActiveScope;
+use Neon\Models\Scopes\PublishedScope;
 use Neon\Models\Statuses\BasicStatus;
 use Neon\Site\Models\Scopes\SiteScope;
 use Neon\Site\Models\Site;
 
-class MenuResource extends Resource
+class ContentResource extends Resource
 {
   use NeonAdmin;
 
-  protected static ?int $navigationSort = 2;
+  protected static ?int $navigationSort = 4;
 
-  protected static ?string $model = Menu::class;
+  protected static ?string $model = Link::class;
 
-  protected static ?string $navigationIcon = 'heroicon-o-bars-3';
+  protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
-  protected static ?string $activeNavigationIcon = 'heroicon-s-bars-3';
+  protected static ?string $activeNavigationIcon = 'heroicon-s-document-text';
 
   protected static ?string $recordTitleAttribute = 'title';
 
@@ -53,7 +53,7 @@ class MenuResource extends Resource
 
   public static function getNavigationLabel(): string
   {
-    return __('neon-admin::admin.navigation.menu');
+    return __('neon-admin::admin.navigation.content');
   }
 
   public static function getNavigationGroup(): string
@@ -63,21 +63,52 @@ class MenuResource extends Resource
 
   public static function getModelLabel(): string
   {
-    return __('neon-admin::admin.models.menu');
+    return __('neon-admin::admin.models.content');
   }
 
   public static function getPluralModelLabel(): string
   {
-    return __('neon-admin::admin.models.menu');
+    return __('neon-admin::admin.models.content');
+  }
+
+
+  public static function tabs(): array
+  {
+    $tabs = [
+      Forms\Components\Tabs\Tab::make(__('neon-admin::admin.resources.content.form.tabs.content'))
+        ->schema([
+          TextInput::make('domdimdum')
+            ->label(__('neon-admin::admin.resources.content.form.fields.title.label'))
+        ])
+        ->columns(1)
+    ];
+    // if (in_array(\Neon\Attributable\Models\Traits\Attributable::class, class_uses_recursive(self::$model))) {
+    //   return Tabs::make('Tabs')
+    //     ->tabs([
+    //       Tabs\Tab::make('Tab 1')
+    //         ->schema($t)
+    //         ->columns(1),
+    //       Tabs\Tab::make('Tab 2')
+    //         ->schema([
+    //           // ...
+    //         ]),
+    //       Tabs\Tab::make('Tab 3')
+    //         ->schema([
+    //           // ...
+    //         ]),
+    //       ]);
+    // } else {
+    // }
+    return $tabs;
   }
 
   public static function items(): array
   {
     $t = [
-      Fieldset::make(trans('neon-admin::admin.resources.menu.form.fieldset.name'))
+      Fieldset::make(__('neon-admin::admin.resources.content.form.fieldset.name'))
         ->schema([
           TextInput::make('title')
-            ->label(trans('neon-admin::admin.resources.menu.form.fields.title.label'))
+            ->label(__('neon-admin::admin.resources.content.form.fields.title.label'))
             ->afterStateUpdated(function ($get, $set, ?string $state) {
               if (!$get('is_slug_changed_manually') && filled($state)) {
                 $set('slug', Str::slug($state));
@@ -87,53 +118,45 @@ class MenuResource extends Resource
             ->required()
             ->maxLength(255),
           TextInput::make('slug')
-            ->label(trans('neon-admin::admin.resources.menu.form.fields.slug.label'))
+            ->label(__('neon-admin::admin.resources.content.form.fields.slug.label'))
             ->afterStateUpdated(function (Closure $set) {
               $set('is_slug_changed_manually', true);
             })
-            ->required(),
-        ])
-        ->columns(2),
-      Select::make('status')
-        ->label(trans('neon-admin::admin.resources.menu.form.fields.status.label'))
-        ->required()
-        ->reactive()
-        ->default(BasicStatus::default())
-        ->options(BasicStatus::class),
-      Select::make('site')
-        ->label(trans('neon-admin::admin.resources.menu.form.fields.site.label'))
-        ->multiple()
-        ->relationship(titleAttribute: 'title'),
-      Repeater::make('items')
-        ->relationship()
-        ->orderColumn('order')
+            ->required()
+            ->helperText(__('neon-admin::admin.resources.content.form.fields.slug.help')),
+        ]),
+      Fieldset::make(__('neon-admin::admin.resources.content.form.fieldset.og_data'))
         ->schema([
-          TextInput::make('title')
-            ->label(trans('neon-admin::admin.resources.menu.form.fields.title.label'))
-            ->afterStateUpdated(function ($get, $set, ?string $state) {
-              if (!$get('is_slug_changed_manually') && filled($state)) {
-                $set('slug', Str::slug($state));
-              }
-            })
+          TextInput::make('og_title')
+            ->label(trans('neon-admin::admin.resources.content.form.fields.og_title.label')),
+          SpatieMediaLibraryFileUpload::make('og_image')
+            ->label(trans('neon-admin::admin.resources.content.form.fields.og_image.label'))
+            ->collection('og_image')
+            ->responsiveImages(),
+          Forms\Components\Textarea::make('og_description')
+            ->label(trans('neon-admin::admin.resources.content.form.fields.og_description.label'))
+            ->rows(4)
+            ->columnSpanFull(),
+        ]),
+      Fieldset::make(__('neon-admin::admin.resources.content.form.fieldset.publishing'))
+        ->schema([
+          Select::make('site')
+            ->label(__('neon-admin::admin.resources.content.form.fields.site.label'))
+            ->multiple()
+            ->relationship(titleAttribute: 'title'),
+          Select::make('status')
+            ->label(__('neon-admin::admin.resources.content.form.fields.status.label'))
+            ->required()
             ->reactive()
-            ->required()
-            ->maxLength(255),
-          TextInput::make('slug')
-            ->label(trans('neon-admin::admin.resources.menu.form.fields.slug.label'))
-            ->afterStateUpdated(function (Closure $set) {
-              $set('is_slug_changed_manually', true);
-            })
-            ->required(),
-          Select::make('link')
-            ->relationship(
-              titleAttribute: 'title',
-              modifyQueryUsing: function (Builder $query, ?Model $record) {
-                return $query
-                  ->withoutGlobalScopes()
-                  ->withoutTrashed();
-              })
-            ->required()
+            ->default(BasicStatus::default())
+            ->options(BasicStatus::class),
+          Forms\Components\DateTimePicker::make('published_at')
+            ->label(__('neon-admin::admin.resources.content.form.fields.published_at.label')),
+          Forms\Components\DateTimePicker::make('expired_at')
+            ->label(__('neon-admin::admin.resources.content.form.fields.expired_at.label'))
+            ->minDate(now()),
         ])
+        ->columns(2)
     ];
     // if (in_array(\Neon\Attributable\Models\Traits\Attributable::class, class_uses_recursive(self::$model))) {
     //   return Tabs::make('Tabs')
@@ -160,17 +183,15 @@ class MenuResource extends Resource
     return $table
       ->columns([
         Tables\Columns\TextColumn::make('title')
-          ->label(__('neon-admin::admin.resources.menu.form.fields.title.label'))
-          ->description(fn (Menu $record): string => "
-          <x-neon-menu id=\"{$record->slug}\"> <x-slot:tools> ... </x-slot> </x-neon-menu>")
+          ->label(__('neon-admin::admin.resources.content.form.fields.title.label'))
           ->searchable(),
         Tables\Columns\TextColumn::make('site.title')
-          ->label(__('neon-admin::admin.resources.menu.form.fields.site.label'))
+          ->label(__('neon-admin::admin.resources.content.form.fields.site.label'))
           ->listWithLineBreaks()
           ->bulleted()
           ->searchable(),
         Tables\Columns\IconColumn::make('status')
-          ->label(__('neon-admin::admin.resources.menu.form.fields.status.label'))
+          ->label(__('neon-admin::admin.resources.content.form.fields.status.label'))
           ->icon(fn (BasicStatus $state): string => match ($state) {
             BasicStatus::New      => 'heroicon-o-sparkles',
             BasicStatus::Active   => 'heroicon-o-check-circle',
@@ -198,13 +219,12 @@ class MenuResource extends Resource
       ])
       ->filters([
         Tables\Filters\SelectFilter::make('site')
-          ->label(__('neon-admin::admin.resources.menu.form.fields.site.label'))
+          ->label(__('neon-admin::admin.resources.content.form.fields.site.label'))
           ->relationship('site', 'title'),
         Tables\Filters\TrashedFilter::make(),
       ])
       ->actions([
-        Tables\Actions\EditAction::make()
-          ->slideOver(),
+        Tables\Actions\EditAction::make(),
         Tables\Actions\DeleteAction::make(),
         Tables\Actions\ForceDeleteAction::make(),
         Tables\Actions\RestoreAction::make(),
@@ -212,17 +232,14 @@ class MenuResource extends Resource
       ->bulkActions(self::bulkActions());
   }
 
-  public static function getRelations(): array
-  {
-    return [
-      RelationManagers\ItemsRelationManager::class,
-    ];
-  }
-
   public static function getPages(): array
   {
     return [
-      'index' => Pages\ManageMenus::route('/'),
+      // 'index' => Pages\ManageContents::route('/'),
+      'index' => Pages\ListContent::route('/'),
+      'create' => Pages\CreateContent::route('/create'),
+      'view' => Pages\ViewContent::route('/{record}'),
+      'edit' => Pages\EditContent::route('/{record}/edit'),
     ];
   }
 
@@ -231,6 +248,7 @@ class MenuResource extends Resource
     return parent::getEloquentQuery()
       ->withoutGlobalScopes([
         ActiveScope::class,
+        PublishedScope::class,
         SiteScope::class,
         SoftDeletingScope::class
       ]);

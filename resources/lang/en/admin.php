@@ -15,7 +15,8 @@ return [
     "web"           => "Website",
     "site"          => "Domains",
     "menu"          => "Menus",
-    "news"          => "News"
+    "news"          => "News",
+    "content"       => "Content"
   ],
   "models" => [
     "admin"         => "Administrator",
@@ -28,8 +29,18 @@ return [
     "menus"         => "Menus",
     "news_item"     => "News Post",
     "news"          => "News",
+    "content"       => "Content",
+    "contents"      => "Contents",
   ],
   "resources" => [
+    "generic"       => [
+      "form"          => [
+        "tabs"          => [
+          "basic"         => "Base settings",
+          "attributables" => "Advanced settings"
+        ]
+      ]
+    ],
     "admins"        => "Administrators",
     "attributables"  => [
       "title"         => "Variables",
@@ -89,10 +100,6 @@ return [
       "title"         => "Sites",
       "table"         => [],
       "form"          => [
-        "tabs"          => [
-          "basic"         => "Basic",
-          "attributables" => "Advanced"
-        ],
         "fields"        => [
           "locale"        => [
             "label"         => "Localization"
@@ -128,10 +135,6 @@ return [
       "title"         => "Menu",
       "table"         => [],
       "form"          => [
-        "tabs"          => [
-          "basic"         => "Basic",
-          "attributables" => "Advanced"
-        ],
         "fieldset"      => [
           "name"          => 'Name',
         ],
@@ -163,10 +166,6 @@ return [
         ]
       ],
       "form"          => [
-        "tabs"          => [
-          "basic"         => "Basic",
-          "attributables" => "Advanced"
-        ],
         "filters"       => [
           "is_active"     => "Is Active?",
           "is_published"  => "Is Published?"
@@ -192,6 +191,80 @@ return [
           ],
           "content_image" => [
             "label"         => "Content Images"
+          ],
+          "site"          => [
+            "label"         => "Website"
+          ],
+          "tags"          => [
+            "label"         => "Tags"
+          ],
+          "pinned"        => [
+            "label"         => "Pinned"
+          ],
+          "status"        => [
+            "label"         => "Status"
+          ],
+          "published_at"  => [
+            "label"         => "Published at"
+          ],
+          "expired_at"    => [
+            "label"         => "Expired at"
+          ]
+        ]
+      ]
+    ],
+    "content"         => [
+      "title"         => "Content",
+      "table"         => [
+        'tabs'          => [
+          'all'           => 'All',
+          'new'           => 'New',
+          'live'          => 'Live',
+          'pinned'        => 'Pinned',
+          'archive'       => 'Archive',
+        ]
+      ],
+      "form"          => [
+        "tabs"          => [
+          "content"       => 'Content'
+        ],
+        "filters"       => [
+          "is_active"     => "Is Active?",
+          "is_published"  => "Is Published?"
+        ],
+        "fieldset"      => [
+          "name"          => "Naming",
+          "publishing"    => "Publishing",
+          "og_data"       => "Sharing"
+        ],
+        "fields"        => [
+          "title"         => [
+            "label"         => "Title"
+          ],
+          "slug"          => [
+            "label"         => "Link",
+            "help"          => "Via this link will be the page available under your site."
+          ],
+          "header_image"  => [
+            "label"         => "Header Image"
+          ],
+          "lead"          => [
+            "label"         => "Lead"
+          ],
+          "content"       => [
+            "label"         => "Content"
+          ],
+          "content_image" => [
+            "label"         => "Content Images"
+          ],
+          "og_title"      => [
+            "label"         => "Title"
+          ],
+          "og_image"      => [
+            "label"         => "Image"
+          ],
+          "og_description" => [
+            "label"         => "Description"
           ],
           "site"          => [
             "label"         => "Website"

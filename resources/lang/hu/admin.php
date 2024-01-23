@@ -30,6 +30,14 @@ return [
     "news"          => "Hírek",
   ],
   "resources" => [
+    "generic"       => [
+      "form"          => [
+        "tabs"          => [
+          "basic"         => "Általános adatok",
+          "attributables" => "Kiegészítő beállítások"
+        ]
+      ]
+    ],
     "admins"        => "Adminisztrátorok",
     "attributables"  => [
       "title"         => "Változók",
@@ -89,10 +97,6 @@ return [
       "title"         => "Oldal",
       "table"         => [],
       "form"          => [
-        "tabs"          => [
-          "basic"         => "Alapadatok",
-          "attributables" => "Kiegészítő beállítások"
-        ],
         "fields"        => [
           "locale"        => [
             "label"         => "Lokalizáció"
@@ -128,10 +132,6 @@ return [
       "title"         => "Menu",
       "table"         => [],
       "form"          => [
-        "tabs"          => [
-          "basic"         => "Menü beállításai",
-          "attributables" => "Haladó beállítások"
-        ],
         "fieldset"      => [
           "name"          => 'Név',
         ],
@@ -163,10 +163,6 @@ return [
         ]
       ],
       "form"          => [
-        "tabs"          => [
-          "basic"         => "Alap",
-          "attributables" => "Haladó"
-        ],
         "filters"       => [
           "is_active"     => "Aktív?",
           "is_published"  => "Publikálva?"
