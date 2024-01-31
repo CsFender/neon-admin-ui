@@ -30,8 +30,8 @@ use Illuminate\Support\Str;
 use Neon\Models\Scopes\ActiveScope;
 use Neon\Models\Scopes\PublishedScope;
 use Neon\Models\Statuses\BasicStatus;
-
 use Neon\Site\Models\Scopes\SiteScope;
+use Spatie\Tags\Tag;
 
 class NewsResource extends Resource
 {
@@ -64,6 +64,37 @@ class NewsResource extends Resource
   {
     return __('neon-admin::admin.models.news');
   }
+
+  public static function builders(): array
+  {
+
+    return [
+      Forms\Components\Builder\Block::make('news-block')
+        ->label(__('neon-admin::admin.resources.news.blocks.news-block.label'))
+        ->schema([
+          TextInput::make('title')
+            ->label(__('neon-admin::admin.resources.news.blocks.news-block.title.label'))
+            ->columnSpan(3),
+          TextInput::make('subtitle')
+            ->label(__('neon-admin::admin.resources.news.blocks.news-block.subtitle.label'))
+            ->columnSpan(3),
+          TextInput::make('limit')
+            ->label(__('neon-admin::admin.resources.news.blocks.news-block.limit.label'))
+            ->helperText(__('neon-admin::admin.resources.news.blocks.news-block.limit.help'))
+            ->numeric()
+            ->columnSPan(1),
+          Select::make('tags')
+            ->label(__('neon-admin::admin.resources.news.blocks.news-block.tags.label'))
+            ->helperText(__('neon-admin::admin.resources.news.blocks.news-block.tags.help'))
+            ->options(Tag::all()->pluck('name', 'id'))
+            ->multiple()
+            ->columnSpan(2)
+        ])
+        ->icon('heroicon-m-squares-2x2')
+        ->columns(3),
+    ];
+  }
+  
 
   public static function items(): array
   {
@@ -148,7 +179,9 @@ class NewsResource extends Resource
   {
     return $table
       ->columns([
-        Tables\Columns\TextColumn::make('site.title'),
+        Tables\Columns\TextColumn::make('site.title')
+          ->label(__('neon-admin::admin.resources.news.form.fields.site.label'))
+          ->toggleable(isToggledHiddenByDefault: false),
         Tables\Columns\TextColumn::make('title')
           ->label(__('neon-admin::admin.resources.news.form.fields.title.label'))
           ->description(fn (News $record): string => $record->slug)

@@ -15,6 +15,7 @@ return [
     "web"           => "Website",
     "site"          => "Domains",
     "menu"          => "Menus",
+    "menu_item"     => "Menu Items",
     "news"          => "News",
     "content"       => "Content"
   ],
@@ -27,6 +28,8 @@ return [
     "sites"         => "Sites",
     "menu"          => "Menu",
     "menus"         => "Menus",
+    "menu_item"     => "Menu Item",
+    "menu_items"    => "Menu Items",
     "news_item"     => "News Post",
     "news"          => "News",
     "content"       => "Content",
@@ -134,6 +137,9 @@ return [
     "menu"         => [
       "title"         => "Menu",
       "table"         => [],
+      "actions"       => [
+        "items"         => 'Items...'
+      ],
       "form"          => [
         "fieldset"      => [
           "name"          => 'Name',
@@ -150,6 +156,57 @@ return [
           ],
           "status"          => [
             "label"         => "Status"
+          ],
+          "items"         => [
+            "label"         => "Items"
+          ]
+        ]
+      ]
+    ],
+    "menu-item"         => [
+      "title"         => "Menu item",
+      "table"         => [],
+      "actions"       => [
+        "items"         => 'Items...'
+      ],
+      "form"          => [
+        "fieldset"      => [
+          "name"          => 'Name',
+        ],
+      "fields"          => [
+          "menu"          => [
+            "label"         => "Menu"
+          ],
+          "children"      => [
+            "label"         => "Subment items",
+            "add"           => "Add sub menu item",
+          ],
+          "link"          => [
+            "label"         => "Content"
+          ],
+          "target"        => [
+            "label"         => "Open to...",
+            "options"       => [
+              "self"          => "Self",
+              "blank"         => "New Window",
+            ]
+          ],
+          "is_outside"    => [
+            "label"         => "Is Outside?",
+            "help"          => "Select this, if you would to point this menu item to outside of the site, or just don't want to connect any content."
+          ],
+          "title"         => [
+            "label"         => "Name"
+          ],
+          "slug"          => [
+            "label"         => "URL",
+            "help"          => "If \"Is Outside\" selected, you can put here a full URL starts with https:// to point to another site."
+          ],
+          "site"          => [
+            "label"         => "Website"
+          ],
+          "status"        => [
+            "label"         => "Status"
           ]
         ]
       ]
@@ -163,6 +220,25 @@ return [
           'live'          => 'Live',
           'pinned'        => 'Pinned',
           'archive'       => 'Archive',
+        ]
+      ],
+      "blocks"        => [
+        "news-block"    => [
+          "label"         => 'Recent News',
+          "title"         => [
+            "label"         => "Title",
+          ],
+          "subtitle"      => [
+            "label"         => "Subtitle",
+          ],
+          "limit"         => [
+            "label"         => "Limit",
+            "help"          => "Maximum number of shown items.",
+          ],
+          "tags"          => [
+            "label"         => "Filter tags",
+            "help"          => "Show items only having these tags."
+          ] ,
         ]
       ],
       "form"          => [
@@ -252,7 +328,19 @@ return [
             "label"         => "Lead"
           ],
           "content"       => [
-            "label"         => "Content"
+            "label"         => "Content",
+            "new"           => "Add new block",
+            "heading"       => [
+              "label"         => "Header",
+              "options"       => [
+                "h1"            => "Header Level 1",
+                "h2"            => "Header Level 2",
+                "h3"            => "Header Level 3",
+                "h4"            => "Header Level 4",
+                "h5"            => "Header Level 5",
+                "h6"            => "Header Level 6",
+              ]
+            ]
           ],
           "content_image" => [
             "label"         => "Content Images"

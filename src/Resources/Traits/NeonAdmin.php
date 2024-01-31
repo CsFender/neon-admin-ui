@@ -63,13 +63,15 @@ trait NeonAdmin
         ->schema(self::attributables());
     }
 
-    
-    try {
-      $tabs = array_merge($tabs, self::tabs());
-    } catch(\Exception $e) {
-
+    if (method_exists('tabs', self::class))
+    {
+      try {
+        $tabs = array_merge($tabs, self::tabs());
+      } catch (\Exception $e) {
+        dd($e);
+      }
     }
-
+    
     if (count($tabs) > 1) {
       return $form
         ->schema([

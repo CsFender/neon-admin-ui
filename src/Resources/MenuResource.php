@@ -5,6 +5,7 @@ namespace Neon\Admin\Resources;
 
 use Closure;
 use Filament\Forms;
+use Filament\Forms\Components\Component;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
@@ -13,6 +14,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -74,6 +76,10 @@ class MenuResource extends Resource
   public static function items(): array
   {
     $t = [
+      Select::make('site')
+        ->label(trans('neon-admin::admin.resources.menu.form.fields.site.label'))
+        ->multiple()
+        ->relationship(titleAttribute: 'title'),
       Fieldset::make(trans('neon-admin::admin.resources.menu.form.fieldset.name'))
         ->schema([
           TextInput::make('title')
@@ -100,58 +106,8 @@ class MenuResource extends Resource
         ->reactive()
         ->default(BasicStatus::default())
         ->options(BasicStatus::class),
-      Select::make('site')
-        ->label(trans('neon-admin::admin.resources.menu.form.fields.site.label'))
-        ->multiple()
-        ->relationship(titleAttribute: 'title'),
-      Repeater::make('items')
-        ->relationship()
-        ->orderColumn('order')
-        ->schema([
-          TextInput::make('title')
-            ->label(trans('neon-admin::admin.resources.menu.form.fields.title.label'))
-            ->afterStateUpdated(function ($get, $set, ?string $state) {
-              if (!$get('is_slug_changed_manually') && filled($state)) {
-                $set('slug', Str::slug($state));
-              }
-            })
-            ->reactive()
-            ->required()
-            ->maxLength(255),
-          TextInput::make('slug')
-            ->label(trans('neon-admin::admin.resources.menu.form.fields.slug.label'))
-            ->afterStateUpdated(function (Closure $set) {
-              $set('is_slug_changed_manually', true);
-            })
-            ->required(),
-          Select::make('link')
-            ->relationship(
-              titleAttribute: 'title',
-              modifyQueryUsing: function (Builder $query, ?Model $record) {
-                return $query
-                  ->withoutGlobalScopes()
-                  ->withoutTrashed();
-              })
-            ->required()
-        ])
     ];
-    // if (in_array(\Neon\Attributable\Models\Traits\Attributable::class, class_uses_recursive(self::$model))) {
-    //   return Tabs::make('Tabs')
-    //     ->tabs([
-    //       Tabs\Tab::make('Tab 1')
-    //         ->schema($t)
-    //         ->columns(1),
-    //       Tabs\Tab::make('Tab 2')
-    //         ->schema([
-    //           // ...
-    //         ]),
-    //       Tabs\Tab::make('Tab 3')
-    //         ->schema([
-    //           // ...
-    //         ]),
-    //       ]);
-    // } else {
-    // }
+    
     return $t;
   }
 
@@ -163,6 +119,13 @@ class MenuResource extends Resource
           ->label(__('neon-admin::admin.resources.menu.form.fields.title.label'))
           ->description(fn (Menu $record): string => "
           <x-neon-menu id=\"{$record->slug}\"> <x-slot:tools> ... </x-slot> </x-neon-menu>")
+          ->copyable()
+          ->copyableState(fn (Menu $record): string => "<x-neon-menu id=\"{$record->slug}\"></x-neon-menu>")
+          ->searchable(),
+        Tables\Columns\TextColumn::make('items.title')
+          ->label(__('neon-admin::admin.resources.menu.form.fields.items.label'))
+          ->listWithLineBreaks()
+          ->bulleted()
           ->searchable(),
         Tables\Columns\TextColumn::make('site.title')
           ->label(__('neon-admin::admin.resources.menu.form.fields.site.label'))
@@ -203,6 +166,10 @@ class MenuResource extends Resource
         Tables\Filters\TrashedFilter::make(),
       ])
       ->actions([
+        Tables\Actions\Action::make('redirect_to_menu_items')
+          ->label(__('neon-admin::admin.resources.menu.actions.items'))
+          ->link()
+          ->url(fn (Menu $record): string => '/admin/menu-items?activeTab=' . $record->slug),
         Tables\Actions\EditAction::make()
           ->slideOver(),
         Tables\Actions\DeleteAction::make(),

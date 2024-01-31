@@ -13,19 +13,25 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Neon\Admin\Resources\Traits\NeonAdmin;
-use Neon\Admin\Resources\MenuResource\Pages;
+use Neon\Admin\Resources\MenuItemResource\Pages;
 use Neon\Admin\Resources\SiteResource\RelationManagers;
 use Neon\Attributable\Models\Attribute;
+use Neon\Models\Link;
 use Neon\Models\Menu;
+use Neon\Models\MenuItem;
 use Neon\Models\Scopes\ActiveScope;
 use Neon\Models\Statuses\BasicStatus;
 use Neon\Site\Models\Scopes\SiteScope;
@@ -37,7 +43,7 @@ class MenuItemResource extends Resource
 
   protected static ?int $navigationSort = 3;
 
-  protected static ?string $model = Menu::class;
+  protected static ?string $model = MenuItem::class;
 
   // protected static ?string $navigationIcon = 'heroicon-o-bars-3';
 
@@ -70,57 +76,215 @@ class MenuItemResource extends Resource
     return __('neon-admin::admin.models.menu_item');
   }
 
+  public static function tabs(): array
+  {
+    return [];
+  }
+
   public static function items(): array
   {
     $t = [
-      Fieldset::make(trans('neon-admin::admin.resources.menu.form.fieldset.name'))
+      Select::make('menu_id')
+        ->relationship(
+          name: 'menu',
+          titleAttribute: 'title',
+          modifyQueryUsing: fn (Builder $query) => $query->withoutGlobalScopes()->withoutTrashed(),
+        )
+        ->label(trans('neon-admin::admin.resources.menu-item.form.fields.menu.label'))
+        ->default(fn (Request $request) => Menu::where('slug', $request->get('activeTab'))->withoutGlobalScopes()->first()?->id)
+        ->searchable()
+        ->reactive()
+        ->required(),
+      Select::make('link_id')
+        ->label(trans('neon-admin::admin.resources.menu-item.form.fields.link.label'))
+        ->relationship(
+          name: 'link',
+          titleAttribute: 'title',
+          modifyQueryUsing: function (Get $get, Builder $query) {
+            $query->withoutGlobalScopes()->withoutTrashed();
+
+            if ($get('menu_id')) {
+              $sites = Menu::withoutGlobalScopes()->find($get('menu_id'))->site;
+
+              foreach ($sites->pluck('id') as $index => $site_id) {
+                if ($index == 0) {
+                  $query->whereRelation('site', 'id', '=', $site_id);
+                } else {
+                  $query->orWhereRelation('site', 'id', '=', $site_id);
+                }
+              }
+            }
+          },
+        )
+        ->preload()
+        ->getSearchResultsUsing(function (Get $get) {
+
+          $link = Link::withoutGlobalScopes()->withoutTrashed();
+
+          if ($get('menu_id')) {
+            $sites = Menu::withoutGlobalScopes()->find($get('menu_id'))->site;
+
+            foreach ($sites->pluck('id') as $index => $site_id) {
+              if ($index == 0) {
+                $link->whereRelation('site', 'id', '=', $site_id);
+              } else {
+                $link->orWhereRelation('site', 'id', '=', $site_id);
+              }
+            }
+          }
+          /** Go.
+           * 
+           */
+          return $link?->pluck('title', 'id')?->toArray();
+        })
+        ->afterStateUpdated(function (Get $get, Set $set, ?string $state) {
+          if (!$get('is_slug_changed_manually') && filled($state)) {
+            $link = Link::withoutGlobalScopes()->find($state);
+
+            $set('title', $link->title);
+            $set('slug', $link->slug);
+          }
+        })
+        // ->options(fn (Get $get): array => Link::whereRelation('site', 'id', Menu::find($get('menu'))?->withoutGlobalScopes()?->first()?->site?->id)?->withoutGlobalScopes()?->withoutTrashed()?->pluck('title', 'id')?->unique()?->toArray())
+        ->requiredIf('is_outside', 0)
+        ->searchable(),
+      Forms\Components\Toggle::make('is_outside')
+        ->onIcon('heroicon-o-arrow-top-right-on-square')
+        ->label(trans('neon-admin::admin.resources.menu-item.form.fields.is_outside.label'))
+        ->helperText(trans('neon-admin::admin.resources.menu-item.form.fields.is_outside.help')),
+
+      Forms\Components\Section::make(trans('neon-admin::admin.resources.menu-item.form.fieldset.name'))
         ->schema([
           TextInput::make('title')
-            ->label(trans('neon-admin::admin.resources.menu.form.fields.title.label'))
+            ->label(trans('neon-admin::admin.resources.menu-item.form.fields.title.label'))
             ->afterStateUpdated(function ($get, $set, ?string $state) {
-              if (!$get('is_slug_changed_manually') && filled($state)) {
+              if (!$get('is_slug_changed_manually') && filled($state) && !$get('is_outside')) {
                 $set('slug', Str::slug($state));
               }
             })
             ->reactive()
             ->required()
             ->maxLength(255),
-          TextInput::make('slug')
-            ->label(trans('neon-admin::admin.resources.menu.form.fields.slug.label'))
-            ->afterStateUpdated(function (Closure $set) {
+          Select::make('target')
+            ->label(__('neon-admin::admin.resources.menu-item.form.fields.target.label'))
+            ->options([
+              MenuItem::TARGET_SELF   => __('neon-admin::admin.resources.menu-item.form.fields.target.options.self'),
+              MenuItem::TARGET_BLANK  => __('neon-admin::admin.resources.menu-item.form.fields.target.options.blank'),
+            ])
+            ->default(MenuItem::TARGET_SELF)
+            ->native(false),
+          TextInput::make('url')
+            ->label(__('neon-admin::admin.resources.menu-item.form.fields.slug.label'))
+            ->helperText(__('neon-admin::admin.resources.menu-item.form.fields.slug.help'))
+            ->afterStateUpdated(function (Set $set) {
               $set('is_slug_changed_manually', true);
             })
             ->required(),
         ])
         ->columns(2),
-      Select::make('status')
-        ->label(trans('neon-admin::admin.resources.menu.form.fields.status.label'))
-        ->required()
-        ->reactive()
-        ->default(BasicStatus::default())
-        ->options(BasicStatus::class),
-      Select::make('site')
-        ->label(trans('neon-admin::admin.resources.menu.form.fields.site.label'))
-        ->multiple()
-        ->relationship(titleAttribute: 'title'),
+      Repeater::make('children')
+        ->relationship()
+        ->label(__('neon-admin::admin.resources.menu-item.form.fields.children.label'))
+        ->addActionLabel(__('neon-admin::admin.resources.menu-item.form.fields.children.add'))
+        ->schema([
+          Select::make('link_id')
+            ->label(trans('neon-admin::admin.resources.menu-item.form.fields.link.label'))
+            ->relationship(
+              name: 'link',
+              titleAttribute: 'title',
+              modifyQueryUsing: function (Get $get, Builder $query) {
+                $query->withoutGlobalScopes()->withoutTrashed();
+
+                if ($get('menu_id')) {
+                  $sites = Menu::withoutGlobalScopes()->find($get('menu_id'))->site;
+
+                  foreach ($sites->pluck('id') as $index => $site_id) {
+                    if ($index == 0) {
+                      $query->whereRelation('site', 'id', '=', $site_id);
+                    } else {
+                      $query->orWhereRelation('site', 'id', '=', $site_id);
+                    }
+                  }
+                }
+              },
+            )
+            ->preload()
+            ->getSearchResultsUsing(function (Get $get) {
+
+              $link = Link::withoutGlobalScopes()->withoutTrashed();
+
+              if ($get('menu_id')) {
+                $sites = Menu::withoutGlobalScopes()->find($get('menu_id'))->site;
+
+                foreach ($sites->pluck('id') as $index => $site_id) {
+                  if ($index == 0) {
+                    $link->whereRelation('site', 'id', '=', $site_id);
+                  } else {
+                    $link->orWhereRelation('site', 'id', '=', $site_id);
+                  }
+                }
+              }
+              /** Go.
+               * 
+               */
+              return $link?->pluck('title', 'id')?->toArray();
+            })
+            ->afterStateUpdated(function (Get $get, Set $set, ?string $state) {
+              if (!$get('is_slug_changed_manually') && filled($state)) {
+                $link = Link::withoutGlobalScopes()->find($state);
+
+                $set('title', $link->title);
+                $set('slug', $link->slug);
+              }
+            })
+            // ->options(fn (Get $get): array => Link::whereRelation('site', 'id', Menu::find($get('menu'))?->withoutGlobalScopes()?->first()?->site?->id)?->withoutGlobalScopes()?->withoutTrashed()?->pluck('title', 'id')?->unique()?->toArray())
+            ->requiredIf('is_outside', 0)
+            ->searchable(),
+          Forms\Components\Toggle::make('is_outside')
+            ->onIcon('heroicon-o-arrow-top-right-on-square')
+            ->label(trans('neon-admin::admin.resources.menu-item.form.fields.is_outside.label'))
+            ->helperText(trans('neon-admin::admin.resources.menu-item.form.fields.is_outside.help')),
+          Forms\Components\Section::make(trans('neon-admin::admin.resources.menu-item.form.fieldset.name'))
+            ->schema([
+              TextInput::make('title')
+                ->label(trans('neon-admin::admin.resources.menu-item.form.fields.title.label'))
+                ->afterStateUpdated(function ($get, $set, ?string $state) {
+                  if (!$get('is_slug_changed_manually') && filled($state) && !$get('is_outside')) {
+                    $set('slug', Str::slug($state));
+                  }
+                })
+                ->reactive()
+                ->required()
+                ->maxLength(255),
+              Select::make('target')
+                ->label(__('neon-admin::admin.resources.menu-item.form.fields.target.label'))
+                ->options([
+                  MenuItem::TARGET_SELF   => __('neon-admin::admin.resources.menu-item.form.fields.target.options.self'),
+                  MenuItem::TARGET_BLANK  => __('neon-admin::admin.resources.menu-item.form.fields.target.options.blank'),
+                ])
+                ->default(MenuItem::TARGET_SELF)
+                ->native(false),
+              TextInput::make('url')
+                ->label(trans('neon-admin::admin.resources.menu-item.form.fields.slug.label'))
+                ->helperText(trans('neon-admin::admin.resources.menu-item.form.fields.slug.help'))
+                ->afterStateUpdated(function (Set $set) {
+                  $set('is_slug_changed_manually', true);
+                })
+                ->required(),
+            ])
+            ->columns(2)
+        ])
+        ->orderColumn('order')
+        ->mutateRelationshipDataBeforeSaveUsing(function (array $data, Get $get): array {
+          $data['menu_id'] = $get('../../menu_id');
+
+          return $data;
+        })
+        ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
+        ->cloneable()
+        ->collapsible()
+        ->collapsed(),
     ];
-    // if (in_array(\Neon\Attributable\Models\Traits\Attributable::class, class_uses_recursive(self::$model))) {
-    //   return Tabs::make('Tabs')
-    //     ->tabs([
-    //       Tabs\Tab::make('Tab 1')
-    //         ->schema($t)
-    //         ->columns(1),
-    //       Tabs\Tab::make('Tab 2')
-    //         ->schema([
-    //           // ...
-    //         ]),
-    //       Tabs\Tab::make('Tab 3')
-    //         ->schema([
-    //           // ...
-    //         ]),
-    //       ]);
-    // } else {
-    // }
     return $t;
   }
 
@@ -129,38 +293,42 @@ class MenuItemResource extends Resource
     return $table
       ->columns([
         Tables\Columns\TextColumn::make('title')
-          ->label(__('neon-admin::admin.resources.menu.form.fields.title.label'))
-          ->description(fn (Menu $record): string => "
-          <x-neon-menu id=\"{$record->slug}\"> <x-slot:tools> ... </x-slot> </x-neon-menu>")
+          ->label(__('neon-admin::admin.resources.menu-item.form.fields.title.label'))
+          ->description(fn (MenuItem $record): string => $record->href)
           ->searchable(),
-        Tables\Columns\TextColumn::make('site.title')
-          ->label(__('neon-admin::admin.resources.menu.form.fields.site.label'))
-          ->listWithLineBreaks()
-          ->bulleted()
-          ->searchable(),
-        Tables\Columns\IconColumn::make('status')
-          ->label(__('neon-admin::admin.resources.menu.form.fields.status.label'))
-          ->icon(fn (BasicStatus $state): string => match ($state) {
-              BasicStatus::New      => 'heroicon-o-sparkles',
-              BasicStatus::Active   => 'heroicon-o-check-circle',
-              BasicStatus::Inactive => 'heroicon-o-x-circle',
-          })
-          ->color(fn (BasicStatus $state): string => match ($state) {
-              BasicStatus::New      => 'gray',
-              BasicStatus::Active   => 'success',
-              BasicStatus::Inactive => 'danger',
-          })
-          ->searchable()
-          ->sortable(),
-      Tables\Columns\TextColumn::make('created_at')
+        // Tables\Columns\TextColumn::make('site.title')
+        //   ->label(__('neon-admin::admin.resources.menu-item.form.fields.site.label'))
+        //   ->listWithLineBreaks()
+        //   ->bulleted()
+        //   ->searchable(),
+        // Tables\Columns\IconColumn::make('status')
+        //   ->label(__('neon-admin::admin.resources.menu-item.form.fields.status.label'))
+        //   ->icon(fn (BasicStatus $state): string => match ($state) {
+        //       BasicStatus::New      => 'heroicon-o-sparkles',
+        //       BasicStatus::Active   => 'heroicon-o-check-circle',
+        //       BasicStatus::Inactive => 'heroicon-o-x-circle',
+        //   })
+        //   ->color(fn (BasicStatus $state): string => match ($state) {
+        //       BasicStatus::New      => 'gray',
+        //       BasicStatus::Active   => 'success',
+        //       BasicStatus::Inactive => 'danger',
+        //   })
+        //   ->searchable()
+        //   ->sortable(),
+        Tables\Columns\TextColumn::make('children.title'),
+        Tables\Columns\TextColumn::make('link.title'),
+        // Tables\Columns\TextColumn::make('order', '#')
+        //   ->toggleable()
+        //   ->sortable(),
+        Tables\Columns\TextColumn::make('created_at')
           ->dateTime()
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true),
-      Tables\Columns\TextColumn::make('updated_at')
+        Tables\Columns\TextColumn::make('updated_at')
           ->dateTime()
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true),
-      Tables\Columns\TextColumn::make('deleted_at')
+        Tables\Columns\TextColumn::make('deleted_at')
           ->dateTime()
           ->sortable()
           ->toggleable(isToggledHiddenByDefault: true),
@@ -175,23 +343,25 @@ class MenuItemResource extends Resource
         Tables\Actions\ForceDeleteAction::make(),
         Tables\Actions\RestoreAction::make(),
       ])
+      ->reorderable('order')
+      ->defaultSort('order')
       ->bulkActions(self::bulkActions());
   }
 
   public static function getPages(): array
   {
     return [
-      'index' => Pages\ManageMenus::route('/'),
+      'index' => Pages\ManageMenuItems::route('/'),
     ];
   }
 
   public static function getEloquentQuery(): Builder
   {
-      return parent::getEloquentQuery()
-          ->withoutGlobalScopes([
-              ActiveScope::class,
-              SiteScope::class,
-              SoftDeletingScope::class
-          ]);
+    return parent::getEloquentQuery()
+      ->withoutGlobalScopes([
+        ActiveScope::class,
+        SiteScope::class,
+        SoftDeletingScope::class
+      ]);
   }
 }

@@ -2,7 +2,7 @@
 
 namespace Neon\Admin\Resources;
 
-
+use Filament\FilamentManager;
 use Filament\Forms;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\FileUpload;
@@ -71,35 +71,62 @@ class ContentResource extends Resource
     return __('neon-admin::admin.models.content');
   }
 
+  public static function builders(): array
+  {
+
+    $builders = [
+      Forms\Components\Builder\Block::make('heading')
+        ->schema([
+          TextInput::make('content')
+            ->label(__('neon-admin::admin.resources.content.form.fields.content.heading.label'))
+            ->required(),
+          Select::make('level')
+            ->options([
+              'h1' => __('neon-admin::admin.resources.content.form.fields.content.heading.options.h1'),
+              'h2' => __('neon-admin::admin.resources.content.form.fields.content.heading.options.h2'),
+              'h3' => __('neon-admin::admin.resources.content.form.fields.content.heading.options.h3'),
+              'h4' => __('neon-admin::admin.resources.content.form.fields.content.heading.options.h4'),
+              'h5' => __('neon-admin::admin.resources.content.form.fields.content.heading.options.h5'),
+              'h6' => __('neon-admin::admin.resources.content.form.fields.content.heading.options.h6'),
+            ])
+            ->required(),
+        ])
+        ->icon('heroicon-m-bars-2')
+        ->columns(2),
+    ];
+
+    foreach (app('filament')->getResources() as $resource) {
+      if (method_exists($resource, 'builders') && $resource != self::class)
+      {
+        try {
+          $builders = array_merge($builders, $resource::builders());
+        } catch (\Exception $e) {
+          dd($e);
+        }
+      }
+    }
+
+    /** Get the builders' list!
+     */
+    return $builders;
+  }
 
   public static function tabs(): array
   {
-    $tabs = [
+    return  [
       Forms\Components\Tabs\Tab::make(__('neon-admin::admin.resources.content.form.tabs.content'))
         ->schema([
-          TextInput::make('domdimdum')
-            ->label(__('neon-admin::admin.resources.content.form.fields.title.label'))
+          Forms\Components\Builder::make('content')
+            ->label(__('neon-admin::admin.resources.content.form.fields.content.label'))
+            ->addActionLabel(__('neon-admin::admin.resources.content.form.fields.content.new'))
+            // ->addActionIcon('heroicons-o-squares-2x2')
+            ->blocks(self::builders())
+            ->blockNumbers(false)
+            ->collapsed()
+            ->minItems(1),
         ])
         ->columns(1)
     ];
-    // if (in_array(\Neon\Attributable\Models\Traits\Attributable::class, class_uses_recursive(self::$model))) {
-    //   return Tabs::make('Tabs')
-    //     ->tabs([
-    //       Tabs\Tab::make('Tab 1')
-    //         ->schema($t)
-    //         ->columns(1),
-    //       Tabs\Tab::make('Tab 2')
-    //         ->schema([
-    //           // ...
-    //         ]),
-    //       Tabs\Tab::make('Tab 3')
-    //         ->schema([
-    //           // ...
-    //         ]),
-    //       ]);
-    // } else {
-    // }
-    return $tabs;
   }
 
   public static function items(): array
