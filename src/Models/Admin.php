@@ -41,4 +41,10 @@ class Admin extends Authenticatable
     protected $casts = [
 
     ];
+
+    
+    public function canAccessFilament(): bool
+    {
+        return true; //- str_ends_with($this->email, '@yourdomain.com') && $this->hasVerifiedEmail();
+    }
 }
