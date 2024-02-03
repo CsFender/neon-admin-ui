@@ -4,12 +4,13 @@ namespace Neon\Admin\Models;
 
 use Neon\Models\Traits\Uuid;
 
+use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class Admin extends Authenticatable
+class Admin extends Authenticatable implements FilamentUser
 {
     use Notifiable;
     use SoftDeletes;
@@ -46,5 +47,10 @@ class Admin extends Authenticatable
     public function canAccessFilament(): bool
     {
         return true; //- str_ends_with($this->email, '@yourdomain.com') && $this->hasVerifiedEmail();
+    }
+
+    public function canAccessPanel(\Filament\Panel $panel): bool
+    {
+        return $panel->getId() == 'neon-admin';
     }
 }
