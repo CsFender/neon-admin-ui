@@ -2,38 +2,42 @@
 
 return [
   "actions"    => [
-    "acivate"       => [
-      "label"         => "Activate selected items"
+    "acivate"   => [
+      "label"     => "Activate selected items"
     ],
-    "inacivate"     => [
-      "label"         => "Inactivate selected items"
+    "inacivate" => [
+      "label"     => "Inactivate selected items"
     ],
   ],
   "navigation" => [
-    "home"          => "Home",
-    "settings"      => "Settings",
-    "web"           => "Website",
-    "site"          => "Domains",
-    "menu"          => "Menus",
-    "menu_item"     => "Menu Items",
-    "news"          => "News",
-    "content"       => "Content"
+    "home"       => "Home",
+    "settings"   => "Settings",
+    "web"        => "Website",
+    "site"       => "Domains",
+    "menu"       => "Menus",
+    "menu_item"  => "Menu Items",
+    "news"       => "News",
+    "content"    => "Content",
+    "slideshow"  => "Slideshow"
   ],
-  "models" => [
-    "admin"         => "Administrator",
-    "admins"        => "Administartors",
-    "attribute"     => "Attribute",
-    "attributes"    => "Attributes",
-    "site"          => "Site",
-    "sites"         => "Sites",
-    "menu"          => "Menu",
-    "menus"         => "Menus",
-    "menu_item"     => "Menu Item",
-    "menu_items"    => "Menu Items",
-    "news_item"     => "News Post",
-    "news"          => "News",
-    "content"       => "Content",
-    "contents"      => "Contents",
+  "models"     => [
+    "admin"      => "Administrator",
+    "admins"     => "Administartors",
+    "attribute"  => "Attribute",
+    "attributes" => "Attributes",
+    "site"       => "Site",
+    "sites"      => "Sites",
+    "menu"       => "Menu",
+    "menus"      => "Menus",
+    "menu_item"  => "Menu Item",
+    "menu_items" => "Menu Items",
+    "news_item"  => "News Post",
+    "news"       => "News",
+    "content"    => "Content",
+    "contents"   => "Contents",
+    "slideshow_item"
+    => "Slideshow",
+    "slideshow"  => "Slideshows"
   ],
   "resources" => [
     "generic"       => [
@@ -173,7 +177,7 @@ return [
         "fieldset"      => [
           "name"          => 'Name',
         ],
-      "fields"          => [
+        "fields"          => [
           "menu"          => [
             "label"         => "Menu"
           ],
@@ -238,7 +242,7 @@ return [
           "tags"          => [
             "label"         => "Filter tags",
             "help"          => "Show items only having these tags."
-          ] ,
+          ],
         ]
       ],
       "form"          => [
@@ -289,7 +293,7 @@ return [
         ]
       ]
     ],
-    "content"         => [
+    "content"       => [
       "title"         => "Content",
       "table"         => [
         'tabs'          => [
@@ -372,6 +376,75 @@ return [
           "expired_at"    => [
             "label"         => "Expired at"
           ]
+        ]
+      ]
+    ],
+    "slideshow"     => [
+      "title"         => "Slideshow",
+      "table"         => [
+        'tabs'          => [
+          'all'           => 'All',
+          'new'           => 'New',
+          'live'          => 'Live',
+          'archive'       => 'Archive',
+        ]
+      ],
+      "form"          => [
+        "fieldset"      => [
+          "publishing"    => "Publishing",
+          "items"         => "Items",
+          "add_items"     => "Add Slide"
+        ],
+        "fields"        => [
+          "title"         => [
+            "label"         => "Title",
+          ],
+          "site"          => [
+            "label"         => "Site",
+          ],
+          "status"        => [
+            "label"         => "Status",
+          ],
+          "published_at"  => [
+            "label"         => "Published At",
+          ],
+          "expired_at"    => [
+            "label"         => "Expired At",
+          ]
+        ]
+      ]
+    ],
+    "slideshow_items"
+    => [
+      "form"          => [
+        "fieldset"      => [
+          "items"         => [
+            "label"         => "Slides",
+            "button"        => "Add Slide"
+          ]
+        ],
+        "fields"        => [
+          "title"         => [
+            "label"         => "Title",
+            "help"          => "Headline on the slide. Leave blank if you just want to sohw the image.",
+          ],
+          "lead"          => [
+            "label"         => "Lead"
+          ],
+          "media"          => [
+            "label"         => "Image"
+          ],
+          "cta_text"      => [
+            "label"         => "Text",
+            "help"          => "Text of the CTA to show. It will be shown only, if you fill out the link.",
+          ],
+          "cta_link"         => [
+            "label"         => "Link",
+            "help"          => "If you want to show the button, and add text this link will be applied to that.",
+          ],
+          "status"          => [
+            "label"         => "Status"
+          ],
         ]
       ]
     ]

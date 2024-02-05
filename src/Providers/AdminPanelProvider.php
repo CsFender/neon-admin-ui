@@ -40,6 +40,12 @@ class AdminPanelProvider extends PanelProvider
       $resources[] = \Neon\Admin\Resources\NewsResource::class;
     }
 
+    if (class_exists(\Neon\Slideshow\Models\Slideshow::class))
+    {
+      $resources[] = \Neon\Admin\Resources\SlideshowResource::class;
+    }
+
+
 
     return $resources;
   }

@@ -108,7 +108,7 @@ return [
             "new"           => "Új domain hozzáadaása"
           ],
           "prefixes"       => [
-            "label"         => "CSoportok",
+            "label"         => "Csoportok",
             "placeholder"   => "Csoport hozzáadása.",
             "help"          => "Any kind of items under this site will be accessible only on these prefixes.",
             "new"           => "Új csoport hozzáadása."
