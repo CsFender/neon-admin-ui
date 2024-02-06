@@ -43,7 +43,7 @@ class NewsResource extends Resource
 
   protected static ?string $navigationIcon = 'heroicon-o-newspaper';
   
-  protected static ?string $activeNavigationIcon = 'heroicon-s-newspapwer';
+  protected static ?string $activeNavigationIcon = 'heroicon-s-newspaper';
 
   protected static ?string $recordTitleAttribute = 'title';
 
