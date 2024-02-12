@@ -99,11 +99,12 @@ class SlideshowResource extends Resource
           Select::make('site')
             ->label(__('neon-admin::admin.resources.slideshow.form.fields.site.label'))
             ->multiple()
+            ->native(false)
             ->relationship(titleAttribute: 'title'),
           Select::make('status')
             ->label(__('neon-admin::admin.resources.slideshow.form.fields.status.label'))
             ->required()
-            ->reactive()
+            ->native(false)
             ->default(BasicStatus::default())
             ->options(BasicStatus::class),
           Forms\Components\DateTimePicker::make('published_at')
@@ -143,7 +144,7 @@ class SlideshowResource extends Resource
           Select::make('status')
             ->label(__('neon-admin::admin.resources.slideshow_items.form.fields.status.label'))
             ->required()
-            ->reactive()
+            ->native(false)
             ->default(BasicStatus::default())
             ->options(BasicStatus::class),
 
