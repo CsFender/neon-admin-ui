@@ -119,7 +119,7 @@ class NewsResource extends Resource
         ->required(),
       SpatieMediaLibraryFileUpload::make('header_image')
         ->label(trans('neon-admin::admin.resources.news.form.fields.header_image.label'))
-        ->collection('header_image')
+        ->collection(News::MEDIA_HEADER)
         ->responsiveImages(),
       Forms\Components\Textarea::make('lead')
         ->label(trans('neon-admin::admin.resources.news.form.fields.lead.label'))
@@ -128,7 +128,7 @@ class NewsResource extends Resource
         ->columnSpanFull(),
       SpatieMediaLibraryFileUpload::make('content_image')
         ->label(trans('neon-admin::admin.resources.news.form.fields.content_image.label'))
-        ->collection('content_image')
+        ->collection(News::MEDIA_CONTENT)
         ->multiple()
         ->responsiveImages(),
       Forms\Components\RichEditor::make('content')
@@ -165,7 +165,7 @@ class NewsResource extends Resource
             ->default(BasicStatus::default())
             ->options(BasicStatus::class),
           Forms\Components\DateTimePicker::make('published_at')
-            ->label(trans('neon-admin::admin.resources.news.form.fields.published.label')),
+            ->label(trans('neon-admin::admin.resources.news.form.fields.published_at.label')),
           Forms\Components\DateTimePicker::make('expired_at')
             ->label(trans('neon-admin::admin.resources.news.form.fields.expired_at.label'))
             ->minDate(now()),

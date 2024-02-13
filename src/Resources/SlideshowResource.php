@@ -31,6 +31,7 @@ use Neon\Models\Scopes\ActiveScope;
 use Neon\Models\Scopes\PublishedScope;
 use Neon\Models\Statuses\BasicStatus;
 use Neon\Site\Models\Scopes\SiteScope;
+use Neon\Slideshow\Models\SlideshowItem;
 use Spatie\Tags\Tag;
 
 class SlideshowResource extends Resource
@@ -128,7 +129,7 @@ class SlideshowResource extends Resource
             ->helperText(__('neon-admin::admin.resources.slideshow_items.form.fields.title.help')),
           SpatieMediaLibraryFileUpload::make('slideshow-item')
             ->label(__('neon-admin::admin.resources.slideshow_items.form.fields.media.label'))
-            ->collection('slideshow-item')
+            ->collection(SlideshowItem::MEDIA_SLIDE)
             ->responsiveImages(),
           Forms\Components\Textarea::make('lead')
             ->label(__('neon-admin::admin.resources.slideshow_items.form.fields.lead.label'))

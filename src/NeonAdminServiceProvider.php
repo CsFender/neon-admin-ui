@@ -25,7 +25,7 @@ class NeonAdminServiceProvider extends PackageServiceProvider
 
   public function configurePackage(Package $package): void
   {
-    AboutCommand::add('Neon', 'Admin', self::VERSION);
+    AboutCommand::add('N30N', 'Admin', self::VERSION);
 
     $package
       ->name('neon-admin')
