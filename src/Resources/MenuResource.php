@@ -2,8 +2,6 @@
 
 namespace Neon\Admin\Resources;
 
-
-use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\Component;
 use Filament\Forms\Components\Fieldset;
@@ -94,7 +92,7 @@ class MenuResource extends Resource
             ->maxLength(255),
           TextInput::make('slug')
             ->label(__('neon-admin::admin.resources.menu.form.fields.slug.label'))
-            ->afterStateUpdated(function (Closure $set) {
+            ->afterStateUpdated(function (Forms\Set $set) {
               $set('is_slug_changed_manually', true);
             })
             ->required(),

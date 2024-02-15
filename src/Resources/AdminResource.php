@@ -5,7 +5,6 @@ namespace Neon\Admin\Resources;
 use Neon\Admin\Resources\AdminResource\Pages;
 use Neon\Admin\Resources\AdminResource\RelationManagers;
 use Neon\Admin\Models\Admin;
-use Closure;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

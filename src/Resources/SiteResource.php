@@ -6,7 +6,6 @@ use Neon\Admin\Resources\SiteResource\Pages;
 use Neon\Admin\Resources\SiteResource\RelationManagers;
 use Neon\Admin\Resources\Traits\NeonAdmin;
 use Neon\Site\Models\Site;
-use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\FileUpload;
@@ -78,7 +77,7 @@ class SiteResource extends Resource
             ->maxLength(255),
           TextInput::make('slug')
             ->label(trans('neon-admin::admin.resources.sites.form.fields.slug.label'))
-            ->afterStateUpdated(function (Closure $set) {
+            ->afterStateUpdated(function (Forms\Set $set) {
               $set('is_slug_changed_manually', true);
             })
             ->required(),

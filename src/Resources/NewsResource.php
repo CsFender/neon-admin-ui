@@ -113,7 +113,7 @@ class NewsResource extends Resource
         ->maxLength(255),
       TextInput::make('slug')
         ->label(trans('neon-admin::admin.resources.news.form.fields.slug.label'))
-        ->afterStateUpdated(function (Closure $set) {
+        ->afterStateUpdated(function (Forms\Set $set) {
           $set('is_slug_changed_manually', true);
         })
         ->required(),

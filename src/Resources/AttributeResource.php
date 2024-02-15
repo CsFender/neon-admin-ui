@@ -2,7 +2,6 @@
 
 namespace Neon\Admin\Resources;
 
-use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Hidden;
@@ -88,7 +87,7 @@ class AttributeResource extends Resource
               ->maxLength(255),
             TextInput::make('slug')
               ->label(__('neon-admin::admin.resources.attributables.form.fields.slug.label'))
-              ->afterStateUpdated(function (Closure $set) {
+              ->afterStateUpdated(function (Forms\Set $set) {
                   $set('is_slug_changed_manually', true);
               })
               ->required(),

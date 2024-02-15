@@ -2,7 +2,6 @@
 
 namespace Neon\Admin\Resources\Traits;
 
-use Closure;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Tables;
