@@ -98,6 +98,9 @@ class MenuResource extends Resource
               $set('is_slug_changed_manually', true);
             })
             ->required(),
+          Forms\Components\Hidden::make('is_slug_changed_manually')
+            ->default(false)
+            ->dehydrated(false),
         ])
         ->columns(2),
       Select::make('status')

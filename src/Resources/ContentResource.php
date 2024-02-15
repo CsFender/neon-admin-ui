@@ -138,7 +138,7 @@ class ContentResource extends Resource
             ->label(__('neon-admin::admin.resources.content.form.fields.title.label'))
             ->afterStateUpdated(function ($get, $set, ?string $state) {
               if (!$get('is_slug_changed_manually') && filled($state)) {
-                $set('slug', Str::slug($state));
+                $set('slug', Str::of($state)->slug('-'));
               }
             })
             ->reactive()
@@ -151,6 +151,9 @@ class ContentResource extends Resource
             })
             ->required()
             ->helperText(__('neon-admin::admin.resources.content.form.fields.slug.help')),
+          Forms\Components\Hidden::make('is_slug_changed_manually')
+            ->default(false)
+            ->dehydrated(false),
         ]),
       Fieldset::make(__('neon-admin::admin.resources.content.form.fieldset.og_data'))
         ->schema([

@@ -5,6 +5,7 @@ namespace Neon\Admin\Resources;
 use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -79,7 +80,7 @@ class AttributeResource extends Resource
               ->label(__('neon-admin::admin.resources.attributables.form.fields.name.label'))
               ->afterStateUpdated(function ($get, $set, ?string $state) {
                   if (!$get('is_slug_changed_manually') && filled($state)) {
-                      $set('slug', Str::slug($state));
+                      $set('slug', Str::of($state)->slug('_'));
                   }
               })
               ->reactive()
@@ -90,7 +91,10 @@ class AttributeResource extends Resource
               ->afterStateUpdated(function (Closure $set) {
                   $set('is_slug_changed_manually', true);
               })
-              ->required()
+              ->required(),
+            Hidden::make('is_slug_changed_manually')
+              ->default(false)
+              ->dehydrated(false),
           ])
           ->columns(2),
         Select::make('cast_as')
@@ -107,6 +111,7 @@ class AttributeResource extends Resource
           ->columns(2),
         Select::make('field')
           ->label(__('neon-admin::admin.resources.attributables.form.fields.field.label'))
+          ->native(false)
           ->options([
             'text' => __('neon-admin::admin.resources.attributables.form.fields.field.options.text')
           ]),
@@ -121,6 +126,7 @@ class AttributeResource extends Resource
             'alphaNum'  => __('neon-admin::admin.resources.attributables.form.fields.rules.options.alphaNum'), // 'Csak betűk és számok',
             'required'  => __('neon-admin::admin.resources.attributables.form.fields.rules.options.required'), // 'Kötelező kitölteni',
             'ascii'     => __('neon-admin::admin.resources.attributables.form.fields.rules.options.ascii'), // 'Csak ASCII karakterek'
+            'tel'       => __('neon-admin::admin.resources.attributables.form.fields.rules.options.tel')
           ]),
         KeyValue::make('params')
           ->label(__('neon-admin::admin.resources.attributables.form.fields.params.label'))

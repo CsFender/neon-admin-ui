@@ -70,7 +70,7 @@ class SiteResource extends Resource
             ->label(trans('neon-admin::admin.resources.sites.form.fields.title.label'))
             ->afterStateUpdated(function ($get, $set, ?string $state) {
               if (!$get('is_slug_changed_manually') && filled($state)) {
-                $set('slug', Str::slug($state));
+                $set('slug', Str::of($state)->slug('-'));
               }
             })
             ->reactive()
@@ -81,7 +81,10 @@ class SiteResource extends Resource
             ->afterStateUpdated(function (Closure $set) {
               $set('is_slug_changed_manually', true);
             })
-            ->required()
+            ->required(),
+          Forms\Components\Hidden::make('is_slug_changed_manually')
+            ->default(false)
+            ->dehydrated(false),
         ])
         ->columns(2),
       FileUpload::make('favicon')

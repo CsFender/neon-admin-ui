@@ -105,7 +105,7 @@ class NewsResource extends Resource
         ->label(trans('neon-admin::admin.resources.news.form.fields.title.label'))
         ->afterStateUpdated(function ($get, $set, ?string $state) {
           if (!$get('is_slug_changed_manually') && filled($state)) {
-            $set('slug', Str::slug($state));
+            $set('slug', Str::of($state)->slug('-'));
           }
         })
         ->reactive()
@@ -117,6 +117,9 @@ class NewsResource extends Resource
           $set('is_slug_changed_manually', true);
         })
         ->required(),
+      Forms\Components\Hidden::make('is_slug_changed_manually')
+        ->default(false)
+        ->dehydrated(false),
       SpatieMediaLibraryFileUpload::make('header_image')
         ->label(trans('neon-admin::admin.resources.news.form.fields.header_image.label'))
         ->collection(News::MEDIA_HEADER)

@@ -248,12 +248,6 @@ class MenuItemResource extends Resource
             ->schema([
               TextInput::make('title')
                 ->label(trans('neon-admin::admin.resources.menu-item.form.fields.title.label'))
-                ->afterStateUpdated(function ($get, $set, ?string $state) {
-                  if (!$get('is_slug_changed_manually') && filled($state) && !$get('is_outside')) {
-                    $set('slug', Str::slug($state));
-                  }
-                })
-                ->reactive()
                 ->required()
                 ->maxLength(255),
               Select::make('target')
