@@ -42,8 +42,7 @@ class ListNews extends ListRecords
         ->query(fn (Builder $query): Builder => $query->where('status', BasicStatus::Active)->where('published_at', '<', now())->where(function ($query) {
           $query->whereNull('expired_at')->orWhere('expired_at', '>', now());
         }))
-        ->badge(News::query()
-          ->where('status', BasicStatus::Active)
+        ->badge(News::where('status', BasicStatus::Active)
           ->where('published_at', '<', now())
           ->where(function ($query) {
             $query->whereNull('expired_at')->orWhere('expired_at', '>', now());

@@ -77,13 +77,13 @@ class MenuResource extends Resource
   {
     $t = [
       Select::make('site')
-        ->label(trans('neon-admin::admin.resources.menu.form.fields.site.label'))
+        ->label(__('neon-admin::admin.resources.menu.form.fields.site.label'))
         ->multiple()
         ->relationship(titleAttribute: 'title'),
-      Fieldset::make(trans('neon-admin::admin.resources.menu.form.fieldset.name'))
+      Fieldset::make(__('neon-admin::admin.resources.menu.form.fieldset.name'))
         ->schema([
           TextInput::make('title')
-            ->label(trans('neon-admin::admin.resources.menu.form.fields.title.label'))
+            ->label(__('neon-admin::admin.resources.menu.form.fields.title.label'))
             ->afterStateUpdated(function ($get, $set, ?string $state) {
               if (!$get('is_slug_changed_manually') && filled($state)) {
                 $set('slug', Str::slug($state));
@@ -93,7 +93,7 @@ class MenuResource extends Resource
             ->required()
             ->maxLength(255),
           TextInput::make('slug')
-            ->label(trans('neon-admin::admin.resources.menu.form.fields.slug.label'))
+            ->label(__('neon-admin::admin.resources.menu.form.fields.slug.label'))
             ->afterStateUpdated(function (Closure $set) {
               $set('is_slug_changed_manually', true);
             })
@@ -101,9 +101,10 @@ class MenuResource extends Resource
         ])
         ->columns(2),
       Select::make('status')
-        ->label(trans('neon-admin::admin.resources.menu.form.fields.status.label'))
+        ->label(__('neon-admin::admin.resources.menu.form.fields.status.label'))
         ->required()
         ->reactive()
+        ->native(false)
         ->default(BasicStatus::default())
         ->options(BasicStatus::class),
     ];

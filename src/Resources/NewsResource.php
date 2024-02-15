@@ -190,6 +190,7 @@ class NewsResource extends Resource
           ->searchable(),
         Tables\Columns\TextColumn::make('lead')
           ->label(__('neon-admin::admin.resources.news.form.fields.lead.label'))
+          ->lineClamp(4)
           ->searchable(),
         Tables\Columns\IconColumn::make('status')
           ->label(__('neon-admin::admin.resources.news.form.fields.status.label'))

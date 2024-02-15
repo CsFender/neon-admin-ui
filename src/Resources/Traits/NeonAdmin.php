@@ -63,7 +63,7 @@ trait NeonAdmin
         ->schema(self::attributables());
     }
 
-    if (method_exists('tabs', self::class))
+    if (method_exists( self::class, 'tabs'))
     {
       try {
         $tabs = array_merge($tabs, self::tabs());
