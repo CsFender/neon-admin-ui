@@ -30,10 +30,10 @@ class ListSlideshows extends ListRecords
         ->icon('heroicon-o-sparkles')
         ->iconPosition(IconPosition::After),
       'live'      => ListRecords\Tab::make(__('neon-admin::admin.resources.slideshow.table.tabs.live'))
-        ->query(fn (Builder $query): Builder => $query->where('status', BasicStatus::Active)->where('published_at', '<', now())->where(function ($query) {
+        ->query(fn (Builder $query): Builder => $query->withoutGlobalScopes()->where('status', BasicStatus::Active)->where('published_at', '<', now())->where(function ($query) {
           $query->whereNull('expired_at')->orWhere('expired_at', '>', now());
         }))
-        ->badge(Slideshow::query()
+        ->badge(Slideshow::withoutGlobalScopes()
           ->where('status', BasicStatus::Active)
           ->where('published_at', '<', now())
           ->where(function ($query) {

@@ -406,6 +406,12 @@ return [
           "site"          => [
             "label"         => "Site",
           ],
+          "items"         => [
+            "label"         => "Items"
+          ],
+          "items_media"   => [
+            "label"         => "Item's media"
+          ],
           "status"        => [
             "label"         => "Status",
           ],
