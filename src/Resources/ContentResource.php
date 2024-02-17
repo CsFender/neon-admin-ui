@@ -155,6 +155,9 @@ class ContentResource extends Resource
             ->default(false)
             ->dehydrated(false),
         ]),
+      Forms\Components\Toggle::make('is_index')
+        ->label(__('neon-admin::admin.resources.content.form.fields.is_index.label'))
+        ->helperText(__('neon-admin::admin.resources.content.form.fields.is_index.help')),
       Fieldset::make(__('neon-admin::admin.resources.content.form.fieldset.og_data'))
         ->schema([
           TextInput::make('og_title')
@@ -178,6 +181,7 @@ class ContentResource extends Resource
             ->label(__('neon-admin::admin.resources.content.form.fields.status.label'))
             ->required()
             ->reactive()
+            ->native(false)
             ->default(BasicStatus::default())
             ->options(BasicStatus::class),
           Forms\Components\DateTimePicker::make('published_at')
@@ -251,6 +255,9 @@ class ContentResource extends Resource
         Tables\Filters\SelectFilter::make('site')
           ->label(__('neon-admin::admin.resources.content.form.fields.site.label'))
           ->relationship('site', 'title'),
+        Tables\Filters\Filter::make('is_index')
+          ->label(__('neon-admin::admin.resources.content.form.fields.is_index.label'))
+          ->query(fn (Builder $query): Builder => $query->where('is_index', true)),
         Tables\Filters\TrashedFilter::make(),
       ])
       ->actions([

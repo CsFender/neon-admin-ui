@@ -331,6 +331,10 @@ return [
           "lead"          => [
             "label"         => "Lead"
           ],
+          "is_index"      => [
+            "label"         => "Is index",
+            "help"          => "Mark this page as the index page related on attached domains."
+          ],
           "content"       => [
             "label"         => "Content",
             "new"           => "Add new block",

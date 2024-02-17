@@ -55,6 +55,7 @@ class AttributeResource extends Resource
       ->schema([
         Select::make('class')
           ->label(__('neon-admin::admin.resources.attributables.form.fields.class.label'))
+          ->native(false)
           ->options(function () {
             $array = [];
             $resources = app('filament')->getResources();
