@@ -114,6 +114,7 @@ class SiteResource extends Resource
         ->columns(2),
       Select::make('locale')
         ->label(__('neon-admin::admin.resources.sites.form.fields.locale.label'))
+        ->native(false)
         ->options(function (): array {
           $result = array();
 

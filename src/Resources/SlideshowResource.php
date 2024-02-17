@@ -78,7 +78,7 @@ class SlideshowResource extends Resource
           Select::make('slideshow')
             ->label(__('neon-admin::admin.resources.slideshow.blocks.slideshow-block.slideshow.label'))
             ->helperText(__('neon-admin::admin.resources.slideshow.blocks.slideshow-block.slideshow.help'))
-            ->options(Tag::all()->pluck('title', 'id'))
+            ->options(Slideshow::all()->pluck('title', 'id'))
             ->multiple()
             ->columnSpan(2)
         ])
