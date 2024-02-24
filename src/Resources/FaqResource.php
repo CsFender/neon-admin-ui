@@ -26,23 +26,23 @@ use Neon\Admin\Resources\Traits\NeonAdmin;
 use Neon\Admin\Resources\MenuResource\Pages;
 use Neon\Admin\Resources\MenuResource\RelationManagers;
 use Neon\Attributable\Models\Attribute;
-use Neon\Models\Menu;
+use Neon\Faq\Models\Faq;
 use Neon\Models\Scopes\ActiveScope;
 use Neon\Models\Statuses\BasicStatus;
 use Neon\Site\Models\Scopes\SiteScope;
 use Neon\Site\Models\Site;
 
-class MenuResource extends Resource
+class FaqResource extends Resource
 {
   use NeonAdmin;
 
-  protected static ?int $navigationSort = 2;
+  protected static ?int $navigationSort = 6;
 
-  protected static ?string $model = Menu::class;
+  protected static ?string $model = Faq::class;
 
-  protected static ?string $navigationIcon = 'heroicon-o-bars-3';
+  protected static ?string $navigationIcon = 'heroicon-o-question-mark-circle';
 
-  protected static ?string $activeNavigationIcon = 'heroicon-s-bars-3';
+  protected static ?string $activeNavigationIcon = 'heroicon-s-question-mark-circle';
 
   protected static ?string $recordTitleAttribute = 'title';
 
@@ -53,7 +53,7 @@ class MenuResource extends Resource
 
   public static function getNavigationLabel(): string
   {
-    return __('neon-admin::admin.navigation.menu');
+    return __('neon-admin::admin.navigation.faq');
   }
 
   public static function getNavigationGroup(): string
@@ -63,25 +63,34 @@ class MenuResource extends Resource
 
   public static function getModelLabel(): string
   {
-    return __('neon-admin::admin.models.menu');
+    return __('neon-admin::admin.models.faq');
   }
 
   public static function getPluralModelLabel(): string
   {
-    return __('neon-admin::admin.models.menu');
+    return __('neon-admin::admin.models.faqs');
   }
 
   public static function items(): array
   {
     $t = [
       Select::make('site')
-        ->label(__('neon-admin::admin.resources.menu.form.fields.site.label'))
+        ->label(__('neon-admin::admin.resources.faq.form.fields.site.label'))
         ->multiple()
         ->relationship(titleAttribute: 'title'),
-      Fieldset::make(__('neon-admin::admin.resources.menu.form.fieldset.name'))
+      Select::make('faq_category_id')
+        ->relationship(
+          name: 'parent',
+          titleAttribute: 'title',
+          modifyQueryUsing: fn (Builder $query) => $query->withoutGlobalScopes()->withoutTrashed(),
+        )
+        ->label(trans('neon-admin::admin.resources.faq.form.fields.category.label'))
+        ->searchable()
+        ->required(),
+      Fieldset::make(__('neon-admin::admin.resources.faq.form.fieldset.name'))
         ->schema([
           TextInput::make('title')
-            ->label(__('neon-admin::admin.resources.menu.form.fields.title.label'))
+            ->label(__('neon-admin::admin.resources.faq.form.fields.title.label'))
             ->afterStateUpdated(function ($get, $set, ?string $state) {
               if (!$get('is_slug_changed_manually') && filled($state)) {
                 $set('slug', Str::slug($state));
@@ -91,7 +100,7 @@ class MenuResource extends Resource
             ->required()
             ->maxLength(255),
           TextInput::make('slug')
-            ->label(__('neon-admin::admin.resources.menu.form.fields.slug.label'))
+            ->label(__('neon-admin::admin.resources.faq.form.fields.slug.label'))
             ->afterStateUpdated(function (Forms\Set $set) {
               $set('is_slug_changed_manually', true);
             })
@@ -102,14 +111,20 @@ class MenuResource extends Resource
         ])
         ->columns(2),
       Select::make('status')
-        ->label(__('neon-admin::admin.resources.menu.form.fields.status.label'))
+        ->label(__('neon-admin::admin.resources.faq.form.fields.status.label'))
         ->required()
         ->reactive()
         ->native(false)
         ->default(BasicStatus::default())
         ->options(BasicStatus::class),
+      Forms\Components\DateTimePicker::make('published_at')
+        ->label(trans('neon-admin::admin.resources.news.form.fields.published_at.label')),
+      Forms\Components\DateTimePicker::make('expired_at')
+        ->label(trans('neon-admin::admin.resources.news.form.fields.expired_at.label'))
+        ->minDate(now()),
+
     ];
-    
+
     return $t;
   }
 
@@ -117,25 +132,21 @@ class MenuResource extends Resource
   {
     return $table
       ->columns([
+        Tables\Columns\TextColumn::make('site.title')
+        ->label(__('neon-admin::admin.resources.faq.form.fields.site.label'))
+        ->listWithLineBreaks()
+        ->bulleted()
+        ->searchable(),
         Tables\Columns\TextColumn::make('title')
-          ->label(__('neon-admin::admin.resources.menu.form.fields.title.label'))
-          ->description(fn (Menu $record): string => "
-          <x-neon-menu id=\"{$record->slug}\"> <x-slot:tools> ... </x-slot> </x-neon-menu>")
-          ->copyable()
-          ->copyableState(fn (Menu $record): string => "<x-neon-menu id=\"{$record->slug}\"></x-neon-menu>")
+          ->label(__('neon-admin::admin.resources.faq.form.fields.title.label'))
           ->searchable(),
         Tables\Columns\TextColumn::make('items.title')
-          ->label(__('neon-admin::admin.resources.menu.form.fields.items.label'))
-          ->listWithLineBreaks()
-          ->bulleted()
-          ->searchable(),
-        Tables\Columns\TextColumn::make('site.title')
-          ->label(__('neon-admin::admin.resources.menu.form.fields.site.label'))
+          ->label(__('neon-admin::admin.resources.faq.form.fields.items.label'))
           ->listWithLineBreaks()
           ->bulleted()
           ->searchable(),
         Tables\Columns\IconColumn::make('status')
-          ->label(__('neon-admin::admin.resources.menu.form.fields.status.label'))
+          ->label(__('neon-admin::admin.resources.faq.form.fields.status.label'))
           ->icon(fn (BasicStatus $state): string => match ($state) {
             BasicStatus::New      => 'heroicon-o-sparkles',
             BasicStatus::Active   => 'heroicon-o-check-circle',
@@ -163,7 +174,7 @@ class MenuResource extends Resource
       ])
       ->filters([
         Tables\Filters\SelectFilter::make('site')
-          ->label(__('neon-admin::admin.resources.menu.form.fields.site.label'))
+          ->label(__('neon-admin::admin.resources.faq.form.fields.site.label'))
           ->relationship('site', 'title'),
         Tables\Filters\TrashedFilter::make(),
       ])

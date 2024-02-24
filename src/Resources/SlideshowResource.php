@@ -79,7 +79,7 @@ class SlideshowResource extends Resource
             ->label(__('neon-admin::admin.resources.slideshow.blocks.slideshow-block.slideshow.label'))
             ->helperText(__('neon-admin::admin.resources.slideshow.blocks.slideshow-block.slideshow.help'))
             ->options(Slideshow::all()->pluck('title', 'id'))
-            ->columnSpan(2)
+            ->native(false)
         ])
         ->icon('heroicon-m-photo')
         ->columns(3),
