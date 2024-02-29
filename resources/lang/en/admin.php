@@ -18,7 +18,10 @@ return [
     "menu_item"  => "Menu Items",
     "news"       => "News",
     "content"    => "Content",
-    "slideshow"  => "Slideshow"
+    "slideshow"  => "Slideshow",
+    "faq"        => "FAQ",
+    "faq_category"
+    => "FAQ Categories",
   ],
   "models"     => [
     "admin"      => "Administrator",
@@ -37,7 +40,13 @@ return [
     "contents"   => "Contents",
     "slideshow_item"
     => "Slideshow",
-    "slideshow"  => "Slideshows"
+    "slideshow"  => "Slideshows",
+    "faq"        => "FAQ",
+    "faqs"       => "FAQs",
+    "faq_category"
+    => "FAQ Category",
+    "faq_categories"
+    => "FAQ Categories",
   ],
   "resources" => [
     "generic"       => [
@@ -49,7 +58,7 @@ return [
       ]
     ],
     "admins"        => "Administrators",
-    "attributables"  => [
+    "attributables" => [
       "title"         => "Variables",
       "form"          => [
         "fieldset"      => [
@@ -138,7 +147,7 @@ return [
         ]
       ]
     ],
-    "menu"         => [
+    "menu"          => [
       "title"         => "Menu",
       "table"         => [],
       "actions"       => [
@@ -215,7 +224,7 @@ return [
         ]
       ]
     ],
-    "news"         => [
+    "news"          => [
       "title"         => "News",
       "table"         => [
         'tabs'          => [
@@ -457,6 +466,73 @@ return [
           ],
         ]
       ]
-    ]
+    ],
+    "faq"           => [
+      "form"          => [
+        "fields"        => [
+          "category"      => [
+            "label"         => "FAQ Category",
+          ],
+          "question"      => [
+            "label"         => "Question",
+          ],
+          "answer"        => [
+            "label"         => "Answer",
+          ],
+          "media"         => [
+            "label"         => "Media",
+          ],
+          "status"        => [
+            "label"         => "Status",
+          ],
+          "published_at"  => [
+            "label"         => "Published",
+          ],
+          "expired_at"    => [
+            "label"         => "Expiring",
+          ],
+        ],
+        "schema"        => [
+          "publishing"    => [
+            "label"         => "Publishing information"
+          ]
+        ],
+      ],
+    ],
+    "faq_category"  => [
+      "form"          => [
+        "fields"        => [
+          "site"          => [
+            "label"         => "Site",
+          ],
+          "title"         => [
+            "label"         => "Title",
+          ],
+          "slug"          => [
+            "label"         => "Slug",
+          ],
+          "media"         => [
+            "label"         => "Media",
+          ],
+          "lead"          => [
+            "label"         => "Lead",
+          ],
+          "status"        => [
+            "label"       => "Status",
+          ],
+          "published_at"  => [
+            "label"       => "Published",
+          ],
+          "expired_at"    => [
+            "label"       => "Expiring",
+          ],
+        ],
+        "schema"      => [
+          "publishing"  => [
+            "label"       => "Publishing information"
+          ]
+        ]
+      ],
+    ],
   ]
 ];
