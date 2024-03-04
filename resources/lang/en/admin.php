@@ -19,9 +19,12 @@ return [
     "news"       => "News",
     "content"    => "Content",
     "slideshow"  => "Slideshow",
-    "faq"        => "FAQ",
+    "faq"        => "FAQs",
     "faq_category"
     => "FAQ Categories",
+    "document"   => "Documents",
+    "docuemnt_category"
+    => "Documents Categories",
   ],
   "models"     => [
     "admin"      => "Administrator",
@@ -47,6 +50,12 @@ return [
     => "FAQ Category",
     "faq_categories"
     => "FAQ Categories",
+    "document"   => "Document",
+    "documents"  => "Documents",
+    "document_category"
+    => "Document Category",
+    "document_categories"
+    => "Document Categories",
   ],
   "resources" => [
     "generic"       => [
@@ -500,6 +509,78 @@ return [
       ],
     ],
     "faq_category"  => [
+      "form"          => [
+        "fields"        => [
+          "site"          => [
+            "label"         => "Site",
+          ],
+          "title"         => [
+            "label"         => "Title",
+          ],
+          "slug"          => [
+            "label"         => "Slug",
+          ],
+          "media"         => [
+            "label"         => "Media",
+          ],
+          "lead"          => [
+            "label"         => "Lead",
+          ],
+          "status"        => [
+            "label"       => "Status",
+          ],
+          "published_at"  => [
+            "label"       => "Published",
+          ],
+          "expired_at"    => [
+            "label"       => "Expiring",
+          ],
+        ],
+        "schema"      => [
+          "publishing"  => [
+            "label"       => "Publishing information"
+          ]
+        ]
+      ],
+    ],
+    "document"      => [
+      "form"          => [
+        "fields"        => [
+          "category"      => [
+            "label"         => "Category",
+          ],
+          "title"      => [
+            "label"         => "Title",
+          ],
+          "document_original_name"
+                          => [
+            "label"         => "Original name"
+          ],
+          "description"   => [
+            "label"         => "Desciption",
+          ],
+          "document"      => [
+            "label"         => "Document",
+          ],
+          "status"        => [
+            "label"         => "Status",
+          ],
+          "published_at"  => [
+            "label"         => "Published",
+          ],
+          "expired_at"    => [
+            "label"         => "Expiring",
+          ],
+        ],
+        "schema"        => [
+          "publishing"    => [
+            "label"         => "Publishing information"
+          ]
+        ],
+      ],
+    ],
+    "document_category"
+                    => [
       "form"          => [
         "fields"        => [
           "site"          => [

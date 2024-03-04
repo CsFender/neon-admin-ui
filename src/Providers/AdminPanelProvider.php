@@ -51,6 +51,11 @@ class AdminPanelProvider extends PanelProvider
       $resources[] = \Neon\Admin\Resources\FaqCategoryResource::class;
     }
 
+    if (class_exists(\Neon\Document\Models\Document::class))
+    {
+      $resources[] = \Neon\Admin\Resources\DocumentResource::class;
+      $resources[] = \Neon\Admin\Resources\DocumentCategoryResource::class;
+    }
 
     return $resources;
   }
