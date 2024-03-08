@@ -149,6 +149,10 @@ class AdminPanelProvider extends PanelProvider
         ->brandLogo(fn () => view(config('neon-admin.logo.view')))
         ->brandLogoHeight(config('neon-admin.logo.height'));
     }
+    if (is_array(config('neon-admin.plugins')) && !empty(config('neon-admin.plugins'))) {
+      $admin->plugins(config('neon-admin.plugins'));
+    }
+    
 
     // if (config('neon-admin.groups')) {
     //   $admin

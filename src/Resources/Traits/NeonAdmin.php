@@ -26,18 +26,24 @@ trait NeonAdmin
     $attributes     = Attribute::where('class', self::$model)->get();
 
     foreach ($attributes as $attribute) {
-      $fieldComponment = 'Filament\Forms\Components\\';
+      $fieldComponent = 'Filament\Forms\Components\\';
 
       switch ($attribute['field']) {
         case 'text':
-          $fieldComponment .= 'TextInput';
+          $fieldComponent .= 'TextInput';
+          break;
+        case 'boolean':
+          $fieldComponent .= 'Toggle';
           break;
       }
-      $field = $fieldComponment::make($attribute['slug'])
+
+      $field = $fieldComponent::make($attribute['slug'])
         ->label($attribute['name']);
+
       foreach ($attribute['rules'] as $rule) {
         $field->$rule();
       }
+
       $attributables[] = $field;
     }
 
