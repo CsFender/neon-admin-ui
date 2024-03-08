@@ -98,6 +98,7 @@ return [
             "label"         => "Input field",
             "options"       => [
               "text"         => "Text input",
+              "boolean"      => "Toogle"
             ],
           ],
           "rules"         => [
@@ -109,6 +110,7 @@ return [
               "alphaNum"      => "Numbers and letters",
               "required"      => "Required",
               "ascii"         => "ASCII",
+              "tel"           => "Phone number"
             ],
           ],
           "params"          => [
