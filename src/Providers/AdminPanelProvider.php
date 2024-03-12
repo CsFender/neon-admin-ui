@@ -196,7 +196,7 @@ class AdminPanelProvider extends PanelProvider
 
     $admin
       ->globalSearch(true)
-      ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
+      ->globalSearchKeyBindings(['command+k', 'ctrl+k']);
 
     return $admin;
   }
