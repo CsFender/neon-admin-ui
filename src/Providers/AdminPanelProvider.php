@@ -104,15 +104,18 @@ class AdminPanelProvider extends PanelProvider
       ->discoverWidgets(in: base_path('/vendor/neon/admin-ui/src/Widgets'), for: 'Neon\\Admin\\Widgets');
     // ->topNavigation();
 
-    if (config('neon-admin.path', 'admin') && !config('neon-admin.domain')) {
+    if (config('neon-admin.path', 'admin') && !config('neon-admin.domain'))
+    {
       $admin->path(config('neon-admin.path'));
     }
 
-    if (!config('neon-admin.path') && config('neon-admin.domain')) {
+    if (!config('neon-admin.path') && config('neon-admin.domain'))
+    {
       $admin->path(config('neon-admin.domain'));
     }
 
-    if (config('neon-admin.guard')) {
+    if (config('neon-admin.guard'))
+    {
       $admin
         ->login()
         ->authGuard(config('neon-admin.guard'))
@@ -121,38 +124,52 @@ class AdminPanelProvider extends PanelProvider
         ]);
     }
 
-    if (config('neon-admin.font', true)) {
+    if (config('neon-admin.font', true))
+    {
       $admin
         ->font(config('neon-admin.font.font-family', 'Inter'), config('neon-admin.font.provider', GoogleFontProvider::class));
     }
 
-    if (is_array(config('neon-admin.resources')) && !empty(config('neon-admin.resources'))) {
+    if (is_array(config('neon-admin.resources')) && !empty(config('neon-admin.resources')))
+    {
       foreach (config('neon-admin.resources') as $path) {
         $admin
           ->discoverResources(in: app_path($path), for: 'App\\Admin\\Resources');
       }
     }
-    if (is_array(config('neon-admin.pages')) && !empty(config('neon-admin.pages'))) {
+    
+    if (is_array(config('neon-admin.pages')) && !empty(config('neon-admin.pages')))
+    {
       foreach (config('neon-admin.pages') as $path) {
         $admin
           ->discoverPages(in: app_path($path), for: 'App\\Admin\\Pages');
       }
     }
-    if (is_array(config('neon-admin.widgets')) && !empty(config('neon-admin.widgets'))) {
+    
+    if (is_array(config('neon-admin.widgets')) && !empty(config('neon-admin.widgets')))
+    {
       foreach (config('neon-admin.widgets') as $path) {
         $admin
           ->discoverWidgets(in: app_path($path), for: 'App\\Admin\\Widgets');
       }
     }
-    if (is_array(config('neon-admin.logo')) && !empty(config('neon-admin.logo'))) {
+    
+    if (is_array(config('neon-admin.logo')) && !empty(config('neon-admin.logo')))
+    {
       $admin
         ->brandLogo(fn () => view(config('neon-admin.logo.view')))
         ->brandLogoHeight(config('neon-admin.logo.height'));
     }
-    if (is_array(config('neon-admin.plugins')) && !empty(config('neon-admin.plugins'))) {
+    
+    if (is_array(config('neon-admin.plugins')) && !empty(config('neon-admin.plugins')))
+    {
       $admin->plugins(config('neon-admin.plugins'));
     }
     
+    if (config('neon-admin.unsaved-changes-alert', false))
+    {
+      $admin->unsavedChangesAlerts();
+    }
 
     // if (config('neon-admin.groups')) {
     //   $admin
@@ -179,7 +196,7 @@ class AdminPanelProvider extends PanelProvider
 
     $admin
       ->globalSearch(true)
-      ->globalSearchKeyBindings(['command+k', 'ctrl+k']);
+      ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
 
     return $admin;
   }

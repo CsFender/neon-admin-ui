@@ -17,8 +17,6 @@ return [
   // ],
 
   'groups'    => [
-    'Cica',
-    'Micw'
   ],
 
   /** Set up folder for admin resources. As you generate resources, please take
@@ -31,7 +29,7 @@ return [
    * @see https://filamentphp.com/docs/3.x/panels/resources/getting-started#specifiying-a-custom-model-namespace
    */
   'resources' => [
-    // 'Admin/Resources'
+    // 'App/Admin/Resources'
   ],
 
   /** By default, Filament will respond to requests from all domains. If you'd
@@ -69,4 +67,10 @@ return [
    * @see https://filamentphp.com/docs/3.x/panels/themes#changing-the-font
    */
   'font'  => null,
+
+  /** If needed to alert on living form after changes, should set this to true.
+   * 
+   * @see https://filamentphp.com/docs/3.x/panels/configuration#unsaved-changes-alerts
+   */
+  'unsaved-changes-alert' => false,
 ];
