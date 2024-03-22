@@ -127,7 +127,10 @@ class AdminPanelProvider extends PanelProvider
     if (config('neon-admin.font', true))
     {
       $admin
-        ->font(config('neon-admin.font.font-family', 'Inter'), config('neon-admin.font.provider', GoogleFontProvider::class));
+        ->font(
+          config('neon-admin.font.font-family', 'Inter'),
+          provider: config('neon-admin.font.provider', GoogleFontProvider::class)
+        );
     }
 
     if (is_array(config('neon-admin.resources')) && !empty(config('neon-admin.resources')))
@@ -169,6 +172,12 @@ class AdminPanelProvider extends PanelProvider
     if (config('neon-admin.unsaved-changes-alert', false))
     {
       $admin->unsavedChangesAlerts();
+    }
+
+    if (is_array(config('neon-admin.theme')) && !empty(config('neon-admin.theme')))
+    {
+      $admin
+        ->viteTheme(config('neon-admin.theme'));
     }
 
     // if (config('neon-admin.groups')) {
