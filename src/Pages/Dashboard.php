@@ -7,7 +7,7 @@ use Filament\Widgets;
 
 class Dashboard extends \Filament\Pages\Dashboard
 {
-  // protected static string $routePath = 'kezdooldal';
+  protected static ?string $navigationIcon = 'heroicon-o-rectangle-group';
 
   public function getTitle(): string
   {
