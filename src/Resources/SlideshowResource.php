@@ -73,7 +73,7 @@ class SlideshowResource extends Resource
 
     return [
       Forms\Components\Builder\Block::make('slideshow-block')
-        ->label(__('neon-admin::admin.resources.slideshow.blocks.slideshow-block.label'))
+        ->label(__('neon-admin::admin.resources.slideshow.blocks.slideshow_block.label'))
         ->schema([
           Select::make('slideshow')
             ->label(__('neon-admin::admin.resources.slideshow.blocks.slideshow-block.slideshow.label'))
