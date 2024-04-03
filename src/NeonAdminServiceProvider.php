@@ -21,7 +21,7 @@ use Spatie\LaravelPackageTools\Package;
 
 class NeonAdminServiceProvider extends PackageServiceProvider
 {
-  const VERSION = '3.0.0-alpha-24';
+  const VERSION = '3.0.0-alpha-25';
 
   public function configurePackage(Package $package): void
   {
