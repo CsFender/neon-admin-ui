@@ -114,6 +114,14 @@ class AdminPanelProvider extends PanelProvider
       $admin->path(config('neon-admin.domain'));
     }
 
+    if (config('neon-admin.hide_resources', false) == 'icon') {
+      $admin->sidebarCollapsibleOnDesktop();
+    }
+    
+    if (config('neon-admin.hide_resources', false) == 'full') {
+      $admin->sidebarFullyCollapsibleOnDesktop();
+    }
+
     if (config('neon-admin.guard'))
     {
       $admin

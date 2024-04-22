@@ -32,6 +32,13 @@ return [
     // 'App/Admin/Resources'
   ],
 
+  /** Hiding navigation bar on desktop. Value could be 'full' or 'icon'.
+   * The 'icon' keyword stands for collapsible, 'full' for fullye collapsible.
+   * 
+   * @see https://filamentphp.com/docs/3.x/panels/navigation#collapsible-sidebar-on-desktop
+   */
+  'hide_resources'  => 'icon',
+
   /** By default, Filament will respond to requests from all domains. If you'd
    * like to scope it to a specific domain, you can use the domain() method,
    * similar to Route::domain() in Laravel.
