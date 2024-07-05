@@ -32,35 +32,56 @@ class AdminPanelProvider extends PanelProvider
       \Neon\Admin\Resources\AdminResource::class,
     ];
 
-    if (class_exists(\Neon\News\Models\News::class))
-    {
-      $resources[] = \Neon\Admin\Resources\NewsResource::class;
-    }
+    $dependencies = [
+        \Neon\Admin\Resources\MenuResource::class => [],
+        \Neon\Admin\Resources\MenuItemResource::class => [],
+        \Neon\Admin\Resources\AttributeResource::class => [],
+        \Neon\News\Models\News::class => [
+            \Neon\Admin\Resources\NewsResource::class
+        ],
+        \Neon\Slideshow\Models\Slideshow::class => [
+            \Neon\Admin\Resources\SlideshowResource::class
+        ],
+        \Neon\Faq\Models\Faq::class => [
+            \Neon\Admin\Resources\FaqResource::class,
+            \Neon\Admin\Resources\FaqCategoryResource::class
+        ],
+        \Neon\Document\Models\Document::class => [
+            \Neon\Admin\Resources\DocumentResource::class,
+            \Neon\Admin\Resources\DocumentCategoryResource::class
+        ]
+    ];
 
-    if (class_exists(\Neon\Slideshow\Models\Slideshow::class))
-    {
-      $resources[] = \Neon\Admin\Resources\SlideshowResource::class;
-    }
+    return $this->resourceResolver($resources, $dependencies);
+  }
 
-    if (class_exists(\Neon\Faq\Models\Faq::class))
-    {
-      $resources[] = \Neon\Admin\Resources\FaqResource::class;
-      $resources[] = \Neon\Admin\Resources\FaqCategoryResource::class;
-    }
+  private function resourceResolver(array $resources, array $dependencies): array
+  {
+      foreach ($dependencies as $group => $items)
+      {
+          if (!class_exists($group))
+          {
+              continue;
+          }
 
-    if (class_exists(\Neon\Document\Models\Document::class))
-    {
-      $resources[] = \Neon\Admin\Resources\DocumentResource::class;
-      $resources[] = \Neon\Admin\Resources\DocumentCategoryResource::class;
-    }
+          if(empty($item))
+          {
+              $resources[] = $group;
+              continue;
+          }
 
-    return $resources;
+          foreach ($items as $item)
+          {
+              $resources[] = $item;
+          }
+      }
+
+      return $resources;
   }
 
   public function panel(Panel $panel): Panel
   {
     // app()->setLocale('hu');
-
 
     Filament::registerRenderHook(
       'footer.after',
@@ -90,7 +111,7 @@ class AdminPanelProvider extends PanelProvider
         DisableBladeIconComponents::class,
         DispatchServingFilamentEvent::class,
         TrustProxies::class,
-        TrustHosts::class
+        TrustHosts::class,
       ])
       // ->discoverResources(in: base_path('/vendor/neon/admin-ui/src/Resources'), for: 'Neon\\Admin\\Resources')
       ->resources($this->scanNeonResources())
@@ -114,7 +135,7 @@ class AdminPanelProvider extends PanelProvider
     if (config('neon-admin.hide_resources', false) == 'icon') {
       $admin->sidebarCollapsibleOnDesktop();
     }
-    
+
     if (config('neon-admin.hide_resources', false) == 'full') {
       $admin->sidebarFullyCollapsibleOnDesktop();
     }
@@ -145,7 +166,7 @@ class AdminPanelProvider extends PanelProvider
           ->discoverResources(in: app_path($path), for: 'App\\Admin\\Resources');
       }
     }
-    
+
     if (is_array(config('neon-admin.pages')) && !empty(config('neon-admin.pages')))
     {
       foreach (config('neon-admin.pages') as $path) {
@@ -153,7 +174,7 @@ class AdminPanelProvider extends PanelProvider
           ->discoverPages(in: app_path($path), for: 'App\\Admin\\Pages');
       }
     }
-    
+
     if (is_array(config('neon-admin.widgets')) && !empty(config('neon-admin.widgets')))
     {
       foreach (config('neon-admin.widgets') as $path) {
@@ -161,19 +182,19 @@ class AdminPanelProvider extends PanelProvider
           ->discoverWidgets(in: app_path($path), for: 'App\\Admin\\Widgets');
       }
     }
-    
+
     if (is_array(config('neon-admin.logo')) && !empty(config('neon-admin.logo')))
     {
       $admin
         ->brandLogo(fn () => view(config('neon-admin.logo.view')))
         ->brandLogoHeight(config('neon-admin.logo.height'));
     }
-    
+
     if (is_array(config('neon-admin.plugins')) && !empty(config('neon-admin.plugins')))
     {
       $admin->plugins(config('neon-admin.plugins'));
     }
-    
+
     if (config('neon-admin.unsaved-changes-alert', false))
     {
       $admin->unsavedChangesAlerts();
